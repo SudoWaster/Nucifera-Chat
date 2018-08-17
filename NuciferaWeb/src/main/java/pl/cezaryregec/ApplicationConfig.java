@@ -4,7 +4,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 public class ApplicationConfig extends ResourceConfig {
 
-    ApplicationConfig() {
+    public ApplicationConfig() {
+        packages("pl.cezaryregec.services");
         register(new GuiceFeature());
     }
 }

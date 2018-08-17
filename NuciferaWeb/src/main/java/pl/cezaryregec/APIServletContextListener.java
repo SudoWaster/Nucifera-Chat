@@ -13,9 +13,6 @@ public class APIServletContextListener extends GuiceServletContextListener {
     static Injector injector;
     private static PersistService persistService;
 
-    APIServletContextListener() {
-    }
-
     /**
      * Creates an injector for a whole app with JPA (and starts it)
      *
@@ -23,7 +20,7 @@ public class APIServletContextListener extends GuiceServletContextListener {
      */
     @Override
     protected Injector getInjector() {
-        injector = Guice.createInjector(new APIServletModule(), new JpaPersistModule("pl.cezaryregec_NuciferaWeb"));
+        injector = Guice.createInjector(new APIServletModule(), new JpaPersistModule("NuciferaPersistence"));
         persistService = injector.getInstance(PersistService.class);
         persistService.start();
         return injector;
