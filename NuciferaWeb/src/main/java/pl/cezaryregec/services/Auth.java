@@ -23,7 +23,7 @@ public class Auth {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postAuth(PostAuthQuery postAuthQuery) {
-        PostAuth postAuth = authResponseFactory.create(postAuthQuery.getAuthState());
+        PostAuth postAuth = authResponseFactory.create(postAuthQuery.authState);
         return Response.ok(postAuth.execute(postAuthQuery)).build();
     }
 }

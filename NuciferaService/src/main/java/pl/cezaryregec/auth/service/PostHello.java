@@ -22,10 +22,10 @@ public class PostHello implements PostAuth {
     @Override
     public AuthResponse execute(PostAuthQuery postAuthQuery) {
         AuthResponse authResponse = new AuthResponse();
-        authResponse.setToken(hashGenerator.encode(postAuthQuery.getChallenge() + System.currentTimeMillis()));
+        authResponse.setToken(hashGenerator.encode(postAuthQuery.challenge + System.currentTimeMillis()));
         authResponse.setAuthState(AuthState.HELLO);
         authResponse.setExpiration(new Timestamp(0));
-        authResponse.setFingerprint(postAuthQuery.getChallenge());
+        authResponse.setFingerprint(postAuthQuery.challenge);
         entityManagerProvider.get().merge(authResponse);
         return authResponse;
     }
