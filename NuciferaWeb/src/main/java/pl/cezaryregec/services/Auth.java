@@ -8,12 +8,9 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class Auth {
 
-    Auth() {
-    }
-
     @POST
     public Response postAuth(
-            @FormParam("username") String mail,
+            @FormParam("username") String username,
             @FormParam("password") String password) {
 
         return Response.ok().build();
