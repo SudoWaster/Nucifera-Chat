@@ -6,6 +6,18 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
 
+        <RollingFile name="application-file">
+            <FileName>logs/application.log</FileName>
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <FilePattern>logs/%d{yyyy-MM}/%d{dd}/nc_application.log.zip</FilePattern>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
+
         <RollingFile name="communication-file">
             <FileName>logs/nc_communication.log</FileName>
             <PatternLayout>
@@ -23,6 +35,10 @@
         <Root level="error">
             <AppenderRef ref="Console" level="error"/>
         </Root>
+
+        <Logger name="application" level="info">
+            <AppenderRef ref="application-file"/>
+        </Logger>
 
         <Logger name="communication" level="trace">
             <AppenderRef ref="communication-file"/>
