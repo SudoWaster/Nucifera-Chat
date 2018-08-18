@@ -15,5 +15,5 @@ will be saved in a resources relative path (for Glassfish it would be `domains/{
 
 To override this config, place your log4j2.xml in the classpath.
 
-# Lincense
+# License
 It is licensed under GNU General Public License v.3 as of 29 June 2007. See the `LICENSE` file for more.
