@@ -7,7 +7,7 @@
         </Console>
 
         <RollingFile name="application-file">
-            <FileName>logs/application.log</FileName>
+            <FileName>logs/nc_application.log</FileName>
             <PatternLayout>
                 <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
