@@ -8,8 +8,7 @@ public enum ClientAuthState {
     HELLO_RESUME(true),
     HELLO_CLIENT_VERIFY(true),
     CIPHER_SPEC_SYNC(true),
-    BYE(true),
-    LOGIN_INIT(true);
+    BYE(true);
 
     private Boolean isSuccessful;
 

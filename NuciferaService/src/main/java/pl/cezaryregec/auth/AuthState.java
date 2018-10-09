@@ -8,7 +8,5 @@ public enum AuthState {
     HELLO_FAIL,
     HELLO_VERIFY,
     RESUME_DONE,
-    RESUME_FAIL,
-    LOGIN_DONE,
-    LOGIN_REFUSED
+    RESUME_FAIL
 }

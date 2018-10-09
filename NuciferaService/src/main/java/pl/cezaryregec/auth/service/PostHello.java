@@ -25,7 +25,6 @@ public class PostHello implements PostAuth {
         authResponse.setToken(hashGenerator.encode(postAuthQuery.challenge + System.currentTimeMillis()));
         authResponse.setAuthState(AuthState.HELLO);
         authResponse.setExpiration(new Timestamp(0));
-        authResponse.setFingerprint(postAuthQuery.challenge);
         entityManagerProvider.get().merge(authResponse);
         return authResponse;
     }

@@ -1,7 +1,7 @@
 package pl.cezaryregec.crypt;
 
 public interface HashGenerator {
-    public String encode(String text);
+    String encode(String text);
 
-    public byte[] encode(byte[] bytes);
+    byte[] encode(byte[] bytes);
 }
