@@ -7,12 +7,14 @@ import pl.cezaryregec.auth.AuthState;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tokens")
-@JsonIgnoreProperties({"token", "fingerprint"})
+@JsonIgnoreProperties({"token", "fingerprint", "challenge"})
 public @Data
 class AuthToken implements Serializable {
     private static final long serialVersionUID = -3873109846898344297L;
@@ -29,15 +31,32 @@ class AuthToken implements Serializable {
     private Timestamp expiration;
 
     @Basic(optional = false)
-    @Column(name = "fingerprint")
     private String fingerprint;
 
-    @Basic()
-    @Column(name = "authState")
+    @Enumerated
+    @Column(name = "authstate")
     private AuthState authState;
+
+    @Column(name = "challenge")
+    private BigInteger challenge;
 
     public AuthToken() {
         this.token = "null" + System.currentTimeMillis();
+    }
+
+    @XmlTransient
+    public String getToken() {
+        return token;
+    }
+
+    @XmlTransient
+    public String getFingerprint() {
+        return fingerprint;
+    }
+
+    @XmlTransient
+    public BigInteger getChallenge() {
+        return challenge;
     }
 
     @Override

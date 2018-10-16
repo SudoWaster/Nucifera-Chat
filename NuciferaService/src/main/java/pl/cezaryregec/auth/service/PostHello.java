@@ -8,6 +8,7 @@ import pl.cezaryregec.auth.session.Identity;
 import pl.cezaryregec.crypt.HashGenerator;
 
 import javax.persistence.EntityManager;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 public class PostHello implements PostAuth {
@@ -25,12 +26,19 @@ public class PostHello implements PostAuth {
     @Override
     public AuthToken execute(PostAuthQuery postAuthQuery) {
         AuthToken authToken = new AuthToken();
+
+        BigInteger challenge = postAuthQuery.getChallenge();
         Long currentTime = System.currentTimeMillis();
-        authToken.setToken(hashGenerator.encode(postAuthQuery.getChallenge() + currentTime));
+
+        authToken.setToken(hashGenerator.encode(challenge.toString() + currentTime));
         authToken.setAuthState(AuthState.HELLO);
         authToken.setExpiration(new Timestamp(currentTime));
+        authToken.setChallenge(postAuthQuery.getChallenge());
+
         entityManagerProvider.get().merge(authToken);
         identity.setToken(authToken);
+        identity.setCipherSpec(true);
+
         return authToken;
     }
 }

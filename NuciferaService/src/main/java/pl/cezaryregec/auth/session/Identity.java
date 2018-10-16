@@ -8,4 +8,5 @@ import pl.cezaryregec.auth.models.AuthToken;
 public @Data
 class Identity {
     private AuthToken token;
+    private Boolean cipherSpec = false;
 }
