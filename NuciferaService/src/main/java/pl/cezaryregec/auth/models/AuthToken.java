@@ -7,15 +7,14 @@ import pl.cezaryregec.auth.AuthState;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tokens")
-@JsonIgnoreProperties({"fingerprint"})
+@JsonIgnoreProperties({"token", "fingerprint"})
 public @Data
-class AuthResponse implements Serializable {
+class AuthToken implements Serializable {
     private static final long serialVersionUID = -3873109846898344297L;
 
     @Id
@@ -37,7 +36,7 @@ class AuthResponse implements Serializable {
     @Column(name = "authState")
     private AuthState authState;
 
-    public AuthResponse() {
+    public AuthToken() {
         this.token = "null" + System.currentTimeMillis();
     }
 
@@ -50,11 +49,11 @@ class AuthResponse implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof AuthResponse)) {
+        if (!(object instanceof AuthToken)) {
             return false;
         }
 
-        AuthResponse other = (AuthResponse) object;
+        AuthToken other = (AuthToken) object;
         return this.token != null && this.token.equals(other.token);
     }
 }

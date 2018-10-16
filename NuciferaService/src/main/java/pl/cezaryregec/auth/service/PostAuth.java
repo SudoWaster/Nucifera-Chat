@@ -1,7 +1,7 @@
 package pl.cezaryregec.auth.service;
 
-import pl.cezaryregec.auth.models.AuthResponse;
+import pl.cezaryregec.auth.models.AuthToken;
 
 public interface PostAuth {
-    AuthResponse execute(PostAuthQuery postAuthQuery);
+    AuthToken execute(PostAuthQuery postAuthQuery);
 }
