@@ -1,7 +1,6 @@
 package pl.cezaryregec.auth;
 
 import com.google.inject.Inject;
-import net.bytebuddy.implementation.bytecode.Throw;
 import pl.cezaryregec.ApplicationLogger;
 import pl.cezaryregec.auth.service.HelloError;
 import pl.cezaryregec.auth.service.PostAuth;
@@ -10,8 +9,8 @@ import pl.cezaryregec.auth.service.PostHello;
 import javax.validation.constraints.NotNull;
 
 public class AuthResponseFactory {
-    private final PostHello postHello;
 
+    private final PostHello postHello;
     private final HelloError helloError;
 
     @Inject

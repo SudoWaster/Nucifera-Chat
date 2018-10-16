@@ -1,6 +1,7 @@
 package pl.cezaryregec.auth.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
 import pl.cezaryregec.auth.AuthState;
 
 import javax.persistence.*;
@@ -13,7 +14,8 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "tokens")
 @JsonIgnoreProperties({"fingerprint"})
-public class AuthResponse implements Serializable {
+public @Data
+class AuthResponse implements Serializable {
     private static final long serialVersionUID = -3873109846898344297L;
 
     @Id
@@ -39,31 +41,6 @@ public class AuthResponse implements Serializable {
         this.token = "null" + System.currentTimeMillis();
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Timestamp getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(Timestamp expiration) {
-        this.expiration = expiration;
-    }
-
-    @XmlTransient
-    public String getFingerprint() {
-        return fingerprint;
-    }
-
-    public void setFingerprint(String fingerprint) {
-        this.fingerprint = fingerprint;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -78,14 +55,6 @@ public class AuthResponse implements Serializable {
         }
 
         AuthResponse other = (AuthResponse) object;
-        return !((this.token == null && other.token != null) || (this.token != null && !this.token.equals(other.token)));
-    }
-
-    public AuthState getAuthState() {
-        return authState;
-    }
-
-    public void setAuthState(AuthState authState) {
-        this.authState = authState;
+        return this.token != null && this.token.equals(other.token);
     }
 }
