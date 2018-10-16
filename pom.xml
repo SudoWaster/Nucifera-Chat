@@ -6,9 +6,16 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nucifera</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.source.version>1.8</java.source.version>
+    <java.target.version>1.8</java.target.version>
+
+    <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+  </properties>
   <modules>
-    <module>NuciferaWeb</module>
     <module>NuciferaService</module>
+    <module>NuciferaWeb</module>
   </modules>
   <dependencies>
     <dependency>
