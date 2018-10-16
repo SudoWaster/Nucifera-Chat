@@ -8,5 +8,14 @@ import pl.cezaryregec.auth.models.AuthToken;
 public @Data
 class Identity {
     private AuthToken token;
+    private String fingerprint;
     private Boolean cipherSpec = false;
+
+    /**
+     * Invalidates identity
+     */
+    public void invalidate() {
+        this.setCipherSpec(false);
+        this.setToken(null);
+    }
 }

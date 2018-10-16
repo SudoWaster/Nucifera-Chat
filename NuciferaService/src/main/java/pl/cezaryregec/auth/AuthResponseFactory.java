@@ -43,8 +43,7 @@ public class AuthResponseFactory {
         // an unexpected error has occured
         // eg. wrong keys used
         ApplicationLogger.log(e);
-        identity.setCipherSpec(false);
-        identity.setToken(null);
+        identity.invalidate();
         return helloError;
     }
 }

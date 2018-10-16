@@ -1,22 +1,24 @@
 package pl.cezaryregec.auth;
 
 public enum ClientAuthState {
-    HELLO_INIT(true),
-    HELLO_CLIENT_DONE(true),
-    HELLO_CLIENT_REFUSED(false),
-    CHANGE_CIPHER_SPEC(true),
-    HELLO_RESUME(true),
-    HELLO_CLIENT_VERIFY(true),
-    CIPHER_SPEC_SYNC(true),
-    BYE(true);
-
-    private Boolean isSuccessful;
-
-    ClientAuthState(Boolean isSuccessful) {
-        this.isSuccessful = isSuccessful;
-    }
-
-    public Boolean isSuccessful() {
-        return isSuccessful;
-    }
+    /**
+     * Init session with sent challenge
+     */
+    HELLO_INIT,
+    /**
+     * Client accepted hello (and challenge is valid)
+     */
+    HELLO_CLIENT_DONE,
+    /**
+     * Client refused hello
+     */
+    HELLO_CLIENT_REFUSED,
+    /**
+     * Login as user
+     */
+    LOGIN,
+    /**
+     * Invalidate session
+     */
+    BYE
 }

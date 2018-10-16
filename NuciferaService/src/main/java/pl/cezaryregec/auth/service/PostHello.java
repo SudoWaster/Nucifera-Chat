@@ -17,7 +17,7 @@ public class PostHello implements PostAuth {
     private final Identity identity;
 
     @Inject
-    public PostHello(HashGenerator hashGenerator, Provider<EntityManager> entityManagerProvider, Identity identity) {
+    PostHello(HashGenerator hashGenerator, Provider<EntityManager> entityManagerProvider, Identity identity) {
         this.hashGenerator = hashGenerator;
         this.entityManagerProvider = entityManagerProvider;
         this.identity = identity;
@@ -34,6 +34,7 @@ public class PostHello implements PostAuth {
         authToken.setAuthState(AuthState.HELLO);
         authToken.setExpiration(new Timestamp(currentTime));
         authToken.setChallenge(postAuthQuery.getChallenge());
+        authToken.setFingerprint(identity.getFingerprint());
 
         entityManagerProvider.get().merge(authToken);
         identity.setToken(authToken);
