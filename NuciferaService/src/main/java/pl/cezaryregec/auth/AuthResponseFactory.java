@@ -14,12 +14,14 @@ public class AuthResponseFactory {
     private final PostHello postHello;
     private final HelloError helloError;
     private final Identity identity;
+    private final ApplicationLogger applicationLogger;
 
     @Inject
-    public AuthResponseFactory(PostHello postHello, HelloError helloError, Identity identity) {
+    public AuthResponseFactory(PostHello postHello, HelloError helloError, Identity identity, ApplicationLogger applicationLogger) {
         this.postHello = postHello;
         this.helloError = helloError;
         this.identity = identity;
+        this.applicationLogger = applicationLogger;
     }
 
     public PostAuth create(ClientAuthState state) {
@@ -42,7 +44,7 @@ public class AuthResponseFactory {
     private PostAuth handleError(Throwable e) {
         // an unexpected error has occured
         // eg. wrong keys used
-        ApplicationLogger.log(e);
+        applicationLogger.log(e);
         identity.invalidate();
         return helloError;
     }

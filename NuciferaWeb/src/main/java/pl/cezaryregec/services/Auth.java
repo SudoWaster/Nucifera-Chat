@@ -3,6 +3,7 @@ package pl.cezaryregec.services;
 import pl.cezaryregec.auth.AuthResponseFactory;
 import pl.cezaryregec.auth.service.PostAuth;
 import pl.cezaryregec.auth.service.PostAuthQuery;
+import pl.cezaryregec.exception.APIException;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -22,7 +23,7 @@ public class Auth {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response postAuth(PostAuthQuery postAuthQuery) {
+    public Response postAuth(PostAuthQuery postAuthQuery) throws APIException {
         PostAuth postAuth = authResponseFactory.create(postAuthQuery.getAuthState());
         return Response.ok(postAuth.execute(postAuthQuery)).build();
     }

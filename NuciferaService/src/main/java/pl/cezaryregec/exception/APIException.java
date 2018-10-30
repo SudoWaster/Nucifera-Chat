@@ -29,6 +29,11 @@ public class APIException extends Exception {
         this.errorCode = errorCode;
     }
 
+    public APIException(Throwable throwable) {
+        this.message = throwable.getMessage();
+        this.setStackTrace(throwable.getStackTrace());
+    }
+
     @JsonProperty("message")
     public String getMessage() {
         return message;

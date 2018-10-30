@@ -6,6 +6,7 @@ import pl.cezaryregec.auth.AuthState;
 import pl.cezaryregec.auth.models.AuthToken;
 import pl.cezaryregec.auth.session.Identity;
 import pl.cezaryregec.crypt.HashGenerator;
+import pl.cezaryregec.exception.APIException;
 
 import javax.persistence.EntityManager;
 import java.math.BigInteger;
@@ -24,7 +25,7 @@ public class PostHello implements PostAuth {
     }
 
     @Override
-    public AuthToken execute(PostAuthQuery postAuthQuery) {
+    public AuthToken execute(PostAuthQuery postAuthQuery) throws APIException {
         AuthToken authToken = new AuthToken();
 
         BigInteger challenge = postAuthQuery.getChallenge();

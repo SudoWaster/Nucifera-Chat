@@ -10,9 +10,9 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 public class ApplicationLogger {
-    private static final Logger LOGGER = LogManager.getLogger("application");
+    private final Logger LOGGER = LogManager.getLogger("application");
 
-    public static void log(Throwable exception) {
+    public void log(Throwable exception) {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PrintStream printStream = new PrintStream(baos, true, StandardCharsets.UTF_8.name())) {
             exception.printStackTrace(printStream);

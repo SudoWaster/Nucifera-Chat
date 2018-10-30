@@ -1,7 +1,11 @@
 package pl.cezaryregec.crypt;
 
+import pl.cezaryregec.exception.APIException;
+
+import javax.validation.constraints.NotNull;
+
 public interface HashGenerator {
 
-    String encode(String text);
-    byte[] encode(byte[] bytes);
+    String encode(@NotNull String text) throws APIException;
+    byte[] encode(@NotNull byte[] bytes) throws APIException;
 }
