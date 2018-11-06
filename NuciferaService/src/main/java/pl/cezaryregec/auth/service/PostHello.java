@@ -28,8 +28,8 @@ public class PostHello implements PostAuth {
     public AuthToken execute(PostAuthQuery postAuthQuery) throws APIException {
         AuthToken authToken = new AuthToken();
 
-        String challenge = postAuthQuery.getChallenge();
-        Long currentTime = System.currentTimeMillis();
+//        String challenge = postAuthQuery.getChallenge();
+//        Long currentTime = System.currentTimeMillis();
 
         //authToken.setToken(hashGenerator.encode(challenge.toString() + currentTime));
         //authToken.setAuthState(AuthState.HELLO);
@@ -37,9 +37,9 @@ public class PostHello implements PostAuth {
         //authToken.setChallenge(postAuthQuery.getChallenge());
         //authToken.setFingerprint(identity.getFingerprint());
 
-        entityManagerProvider.get().merge(authToken);
-        identity.setToken(authToken);
-        identity.setCipherSpec(true);
+//        entityManagerProvider.get().merge(authToken);
+//        identity.setToken(authToken);
+//        identity.setCipherSpec(true);
 
         return authToken;
     }

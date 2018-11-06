@@ -1,6 +1,7 @@
 package pl.cezaryregec.filter;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import pl.cezaryregec.auth.session.Identity;
 import pl.cezaryregec.auth.session.IdentityValidator;
 
@@ -10,21 +11,20 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
-@Provider
+@javax.ws.rs.ext.Provider
 @Priority(Priorities.AUTHENTICATION)
 public class RequestCommunicationDecryptorFilter implements ContainerRequestFilter {
 
     @Context
     private HttpServletRequest request;
 
-    private final com.google.inject.Provider<Identity> identityProvider;
+    private final Provider<Identity> identityProvider;
     private final IdentityValidator identityValidator;
 
     @Inject
-    public RequestCommunicationDecryptorFilter(com.google.inject.Provider<Identity> identityProvider, IdentityValidator identityValidator) {
+    public RequestCommunicationDecryptorFilter(Provider<Identity> identityProvider, IdentityValidator identityValidator) {
         this.identityProvider = identityProvider;
         this.identityValidator = identityValidator;
     }
