@@ -2,7 +2,6 @@ package pl.cezaryregec.crypt;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pl.cezaryregec.ApplicationLogger;
 import pl.cezaryregec.exception.APIException;
 
 import static org.junit.Assert.assertArrayEquals;

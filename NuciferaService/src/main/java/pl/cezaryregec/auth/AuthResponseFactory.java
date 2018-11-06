@@ -1,7 +1,7 @@
 package pl.cezaryregec.auth;
 
 import com.google.inject.Inject;
-import pl.cezaryregec.ApplicationLogger;
+import pl.cezaryregec.logger.ApplicationLogger;
 import pl.cezaryregec.auth.service.HelloError;
 import pl.cezaryregec.auth.service.PostAuth;
 import pl.cezaryregec.auth.service.PostHello;

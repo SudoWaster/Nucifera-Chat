@@ -11,5 +11,5 @@ class PostAuthQuery implements Serializable {
     private static final long serialVersionUID = 7286090064689087685L;
 
     private ClientAuthState authState;
-    private BigInteger challenge;
+    private String challenge;
 }

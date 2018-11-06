@@ -29,6 +29,16 @@
             </Policies>
         </RollingFile>
 
+        <RollingFile name="security-file">
+            <FileName>logs/nc_security.log</FileName>
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <FilePattern>logs/%d{yyyy-MM}/%d{dd}/nc_security.log.zip</FilePattern>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
 
@@ -44,5 +54,8 @@
             <AppenderRef ref="communication-file"/>
         </Logger>
 
+        <Logger name="security" level="trace">
+            <AppenderRef ref="security-file"/>
+        </Logger>
     </Loggers>
 </Configuration>

@@ -2,7 +2,7 @@ package pl.cezaryregec.exception;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import pl.cezaryregec.ApplicationLogger;
+import pl.cezaryregec.logger.ApplicationLogger;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.Response;

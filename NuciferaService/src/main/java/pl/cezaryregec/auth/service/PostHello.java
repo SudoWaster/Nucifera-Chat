@@ -28,14 +28,14 @@ public class PostHello implements PostAuth {
     public AuthToken execute(PostAuthQuery postAuthQuery) throws APIException {
         AuthToken authToken = new AuthToken();
 
-        BigInteger challenge = postAuthQuery.getChallenge();
+        String challenge = postAuthQuery.getChallenge();
         Long currentTime = System.currentTimeMillis();
 
-        authToken.setToken(hashGenerator.encode(challenge.toString() + currentTime));
-        authToken.setAuthState(AuthState.HELLO);
-        authToken.setExpiration(new Timestamp(currentTime));
-        authToken.setChallenge(postAuthQuery.getChallenge());
-        authToken.setFingerprint(identity.getFingerprint());
+        //authToken.setToken(hashGenerator.encode(challenge.toString() + currentTime));
+        //authToken.setAuthState(AuthState.HELLO);
+        //authToken.setExpiration(new Timestamp(currentTime));
+        //authToken.setChallenge(postAuthQuery.getChallenge());
+        //authToken.setFingerprint(identity.getFingerprint());
 
         entityManagerProvider.get().merge(authToken);
         identity.setToken(authToken);

@@ -1,4 +1,4 @@
-package pl.cezaryregec;
+package pl.cezaryregec.logger;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -9,9 +9,10 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-public class ApplicationLogger {
+public class ApplicationLogger implements NuciferaLoger {
     private final Logger LOGGER = LogManager.getLogger("application");
 
+    @Override
     public void log(Throwable exception) {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PrintStream printStream = new PrintStream(baos, true, StandardCharsets.UTF_8.name())) {
@@ -24,5 +25,15 @@ public class ApplicationLogger {
         message += "Stack trace: " + stackTrace;
 
         LOGGER.log(Level.ERROR, message);
+    }
+
+    @Override
+    public void log(String message) {
+        LOGGER.log(Level.INFO, message);
+    }
+
+    @Override
+    public void log(String message, Level level) {
+        LOGGER.log(level, message);
     }
 }
