@@ -3,13 +3,13 @@
     <Appenders>
 
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
 
         <RollingFile name="application-file">
             <FileName>logs/nc_application.log</FileName>
             <PatternLayout>
-                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
             <FilePattern>logs/%d{yyyy-MM}/%d{dd}/nc_application.log.zip</FilePattern>
             <Policies>
@@ -21,7 +21,7 @@
         <RollingFile name="communication-file">
             <FileName>logs/nc_communication.log</FileName>
             <PatternLayout>
-                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
             <FilePattern>logs/%d{yyyy-MM}/%d{dd}/nc_communication.log.zip</FilePattern>
             <Policies>
@@ -32,7 +32,7 @@
         <RollingFile name="security-file">
             <FileName>logs/nc_security.log</FileName>
             <PatternLayout>
-                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
             <FilePattern>logs/%d{yyyy-MM}/%d{dd}/nc_security.log.zip</FilePattern>
             <Policies>
@@ -46,7 +46,7 @@
             <AppenderRef ref="Console" level="error"/>
         </Root>
 
-        <Logger name="application" level="info">
+        <Logger name="application" level="trace">
             <AppenderRef ref="application-file"/>
         </Logger>
 
