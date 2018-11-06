@@ -2,8 +2,7 @@ package pl.cezaryregec;
 
 import com.google.inject.servlet.ServletModule;
 import pl.cezaryregec.auth.AuthResponseFactory;
-import pl.cezaryregec.crypt.HashGenerator;
-import pl.cezaryregec.crypt.Sha256Generator;
+import pl.cezaryregec.crypt.*;
 
 public class APIServletModule extends ServletModule {
 
@@ -13,6 +12,8 @@ public class APIServletModule extends ServletModule {
     @Override
     public void configureServlets() {
         bind(HashGenerator.class).to(Sha256Generator.class);
+        bind(AsymmetricDecryptor.class).to(RsaDecryptor.class);
+        bind(AsymmetricSigner.class).to(RsaSigner.class);
         bind(AuthResponseFactory.class);
     }
 }
