@@ -5,8 +5,14 @@ Nucifera Chat is a secure chat server with end-to-end encryption written in Java
 At first you should setup a JDBC resource of name `jdbc/nucifera` or specify your JTA data source in `persistence.xml`.
 
 If you are using Glassfish or Payara, you can also skip this by using sample `glassfish-resources.xml` file provided,
-but please not that **this is not recommended** if you wish to share your Nucifera derivative, as you are compromising 
-your database very easily.
+but you might want to avoid using that in production.
+
+##### Encryption
+Client-server connection uses additional layer of encryption regardless of any other secure connection configuration and because of that you need to include a RSA key.
+
+Place your `rsa_private.pem` in the classpath (eg. `lib/classes`) and make sure it is a valid **PKCS#8** RSA private key.
+
+You will not be able to make a handshake without this step.
 
 ### Configuration
 #### Logging

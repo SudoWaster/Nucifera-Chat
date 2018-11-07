@@ -25,7 +25,7 @@ public class RsaKeySupplier implements Supplier<Optional<KeyPair>> {
     private final SecurityLogger securityLogger;
 
     @Inject
-    RsaKeySupplier(ApplicationLogger applicationLogger, SecurityLogger securityLogger) {
+    public RsaKeySupplier(ApplicationLogger applicationLogger, SecurityLogger securityLogger) {
         this.applicationLogger = applicationLogger;
         this.securityLogger = securityLogger;
     }
@@ -83,17 +83,14 @@ public class RsaKeySupplier implements Supplier<Optional<KeyPair>> {
      * @return a {@link PKCS8EncodedKeySpec} of read key
      */
     private PKCS8EncodedKeySpec readFromResource(String filename) {
-        InputStream inputStream = getClass().getResourceAsStream(filename);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
         InputStreamReader keyReader = new InputStreamReader(inputStream);
         String key = new BufferedReader(keyReader)
                 .lines()
                 .collect(Collectors.joining("\n"))
 
                 .replace("-----BEGIN PRIVATE KEY-----\n", "")
-                .replace("\n-----END PRIVATE KEY-----\n", "")
-
-                .replace("-----BEGIN PUBLIC KEY-----\n", "")
-                .replace("\n-----END PUBLIC KEY-----\n", "");
+                .replace("\n-----END PRIVATE KEY-----\n", "");
 
         return new PKCS8EncodedKeySpec(DatatypeConverter.parseBase64Binary(key));
     }
