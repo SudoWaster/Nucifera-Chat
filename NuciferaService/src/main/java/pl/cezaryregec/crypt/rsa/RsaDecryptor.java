@@ -1,6 +1,7 @@
-package pl.cezaryregec.crypt;
+package pl.cezaryregec.crypt.rsa;
 
 import com.google.inject.Inject;
+import pl.cezaryregec.crypt.AsymmetricDecryptor;
 import pl.cezaryregec.crypt.keys.RsaKeySupplier;
 import pl.cezaryregec.exception.APIException;
 

@@ -2,78 +2,116 @@ package pl.cezaryregec.crypt.keys;
 
 import com.google.inject.Inject;
 import org.apache.logging.log4j.Level;
+import pl.cezaryregec.exception.APIException;
 import pl.cezaryregec.logger.ApplicationLogger;
 import pl.cezaryregec.logger.SecurityLogger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
 import java.security.*;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class RsaKeySupplier implements Supplier<Optional<KeyPair>> {
 
-    private static final int KEYSIZE = 2048;
-    private static final String PUBLIC_FILENAME = "public.rsa";
-    private static final String PRIVATE_FILENAME = "private.rsa";
+    private static final String PRIVATE_FILENAME = "rsa_private.pem";
 
-    private final RsaKeyPairGeneratorFactory keyPairGeneratorFactory;
     private final ApplicationLogger applicationLogger;
     private final SecurityLogger securityLogger;
 
     @Inject
-    RsaKeySupplier(RsaKeyPairGeneratorFactory keyPairGeneratorFactory, ApplicationLogger applicationLogger, SecurityLogger securityLogger) {
-        this.keyPairGeneratorFactory = keyPairGeneratorFactory;
+    RsaKeySupplier(ApplicationLogger applicationLogger, SecurityLogger securityLogger) {
         this.applicationLogger = applicationLogger;
         this.securityLogger = securityLogger;
     }
 
+    /**
+     * Returns a key pair from classpath or {@link Optional#empty() empty Optional} if key cannot be read
+     * PKCS#8 private key filename: {@value #PRIVATE_FILENAME}
+     * Public key will be generated from private
+     *
+     * @return an {@link Optional} of a saved key pair
+     */
     @Override
     public Optional<KeyPair> get() {
-        Optional<KeyPair> result;
         try {
-            result = Optional.of(getFromResource());
+            return Optional.of(createFromResource());
         } catch (Exception ex) {
             applicationLogger.log(ex);
             securityLogger.log(ex);
-            result = Optional.ofNullable(tryGeneratingKeyPair());
         }
-        return result;
+        return Optional.empty();
     }
 
-    private KeyPair getFromResource() throws IOException, ClassNotFoundException {
-        InputStream publicStream = getClass().getResourceAsStream(PUBLIC_FILENAME);
-        InputStream privateStream = getClass().getResourceAsStream(PRIVATE_FILENAME);
-        ObjectInputStream publicKeyParser = new ObjectInputStream(publicStream);
-        ObjectInputStream privateKeyParser = new ObjectInputStream(privateStream);
-        PublicKey publicKey = (PublicKey) publicKeyParser.readObject();
-        PrivateKey privateKey = (PrivateKey) privateKeyParser.readObject();
+    /**
+     * Creates a key pair from resource
+     * Reads a private key and generated public
+     *
+     * @return a {@link KeyPair} of keys
+     * @throws Exception when cannot read or parse keys
+     *                   (or a rare situation happens when KeyFactory Instance cannot be created)
+     */
+    private KeyPair createFromResource() throws Exception {
+        PrivateKey privateKey = createPrivateKeyFromResource();
+        PublicKey publicKey = createPublicKeyFromPrivate(privateKey);
 
         return new KeyPair(publicKey, privateKey);
     }
 
-    private KeyPair tryGeneratingKeyPair() {
-        try {
-            KeyPair pair = getGeneratedKeyPair();
-            return pair;
-        } catch (NoSuchAlgorithmException ex) {
-            securityLogger.log(ex);
-            securityLogger.log("Cannot find encryption algorithm.", Level.FATAL);
-            return null;
-        }
+    /**
+     * Creates a private key from resource of name {@value PRIVATE_FILENAME}
+     *
+     * @return a {@link PrivateKey}
+     * @throws NoSuchAlgorithmException when there is no RSA algorithm present in the system
+     * @throws InvalidKeySpecException  when key parsing went wrong
+     */
+    private PrivateKey createPrivateKeyFromResource() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        PKCS8EncodedKeySpec keySpec = readFromResource(PRIVATE_FILENAME);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
     }
 
-    private KeyPair getGeneratedKeyPair() throws NoSuchAlgorithmException {
-        KeyPairGenerator generator = keyPairGeneratorFactory.create();
-        generator.initialize(KEYSIZE, new SecureRandom());
-        KeyPair pair = generator.generateKeyPair();
-        return pair;
+    /**
+     * Creates a PKCS#8 encoded key spec from a given file
+     *
+     * @param filename a PKCS#8 key filename
+     * @return a {@link PKCS8EncodedKeySpec} of read key
+     */
+    private PKCS8EncodedKeySpec readFromResource(String filename) {
+        InputStream inputStream = getClass().getResourceAsStream(filename);
+        InputStreamReader keyReader = new InputStreamReader(inputStream);
+        String key = new BufferedReader(keyReader)
+                .lines()
+                .collect(Collectors.joining("\n"))
+
+                .replace("-----BEGIN PRIVATE KEY-----\n", "")
+                .replace("\n-----END PRIVATE KEY-----\n", "")
+
+                .replace("-----BEGIN PUBLIC KEY-----\n", "")
+                .replace("\n-----END PUBLIC KEY-----\n", "");
+
+        return new PKCS8EncodedKeySpec(DatatypeConverter.parseBase64Binary(key));
     }
 
-    private void saveKeyPair(KeyPair pair) {
-        PublicKey publicKey = pair.getPublic();
-        PrivateKey privateKey = pair.getPrivate();
-        // TODO
+    /**
+     * Creates public key from private
+     *
+     * @param privateKey a {@link PrivateKey} to generate public from
+     * @return a corresponding {@link PublicKey}
+     * @throws NoSuchAlgorithmException when there is no RSA algorithm present in the system
+     * @throws InvalidKeySpecException  when key parsing went wrong
+     */
+    private PublicKey createPublicKeyFromPrivate(PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        RSAPrivateCrtKey privateCert = (RSAPrivateCrtKey) privateKey;
+
+        RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(privateCert.getModulus(), privateCert.getPublicExponent());
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePublic(publicKeySpec);
     }
 }
