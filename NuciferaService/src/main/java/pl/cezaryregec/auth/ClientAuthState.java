@@ -6,7 +6,7 @@ public enum ClientAuthState {
      */
     HELLO_INIT,
     /**
-     * Client accepted hello (and challenge is valid)
+     * Client accepted signed challenge
      */
     HELLO_CLIENT_DONE,
     /**

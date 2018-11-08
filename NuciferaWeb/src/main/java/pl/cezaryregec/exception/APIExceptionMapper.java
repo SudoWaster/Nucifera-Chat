@@ -15,12 +15,8 @@ public class APIExceptionMapper extends Throwable implements ExceptionMapper<Thr
 
     private static final long serialVersionUID = 5089659007201514628L;
 
-    private final ApplicationLogger applicationLogger;
-
     @Inject
-    public APIExceptionMapper(ApplicationLogger applicationLogger) {
-        this.applicationLogger = applicationLogger;
-    }
+    private ApplicationLogger applicationLogger;
 
     @Override
     public Response toResponse(Throwable exception) {
@@ -29,6 +25,9 @@ public class APIExceptionMapper extends Throwable implements ExceptionMapper<Thr
         if (exception instanceof ClientErrorException) {
             ClientErrorException clientError = (ClientErrorException) exception;
             apiException.setErrorCode(clientError.getResponse().getStatus());
+        }
+        if (exception instanceof APIException) {
+            apiException.setErrorCode(((APIException) exception).getErrorCode());
         }
         return Response.status(apiException.getErrorCode()).entity(apiException).build();
     }

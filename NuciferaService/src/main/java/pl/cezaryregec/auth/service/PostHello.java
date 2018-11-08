@@ -4,43 +4,59 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import pl.cezaryregec.auth.AuthState;
 import pl.cezaryregec.auth.models.AuthToken;
+import pl.cezaryregec.auth.models.PostAuthQuery;
+import pl.cezaryregec.auth.models.PostAuthResponse;
 import pl.cezaryregec.auth.session.Identity;
+import pl.cezaryregec.auth.session.IdentityService;
+import pl.cezaryregec.crypt.AsymmetricDecryptor;
+import pl.cezaryregec.crypt.AsymmetricSigner;
 import pl.cezaryregec.crypt.HashGenerator;
+import pl.cezaryregec.crypt.aes.AesUtilities;
 import pl.cezaryregec.exception.APIException;
 
 import javax.persistence.EntityManager;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 
 public class PostHello implements PostAuth {
-    private final HashGenerator hashGenerator;
-    private final Provider<EntityManager> entityManagerProvider;
-    private final Identity identity;
+    private final IdentityService identityService;
+    private final AsymmetricDecryptor decryptor;
+    private final AsymmetricSigner signer;
 
     @Inject
-    PostHello(HashGenerator hashGenerator, Provider<EntityManager> entityManagerProvider, Identity identity) {
-        this.hashGenerator = hashGenerator;
-        this.entityManagerProvider = entityManagerProvider;
-        this.identity = identity;
+    PostHello(IdentityService identityService, AsymmetricDecryptor decryptor, AsymmetricSigner signer) {
+        this.identityService = identityService;
+        this.decryptor = decryptor;
+        this.signer = signer;
     }
 
+    /**
+     * Client initiated a handshake. Save new session data and verify server identity.
+     *
+     * @param postAuthQuery
+     * @return {@link PostAuthResponse} with current auth state
+     * @throws APIException when decryption or challenge signing has a problem
+     */
     @Override
-    public AuthToken execute(PostAuthQuery postAuthQuery) throws APIException {
-        AuthToken authToken = new AuthToken();
+    public PostAuthResponse execute(PostAuthQuery postAuthQuery) throws APIException {
+        String challenge = postAuthQuery.getChallenge();
+        String plainChallenge = decryptor.decrypt(challenge);
 
-//        String challenge = postAuthQuery.getChallenge();
-//        Long currentTime = System.currentTimeMillis();
+        if (!AesUtilities.SUPPORTED_KEY_SIZES.contains(plainChallenge.length())) {
+            throw new APIException("Wrong key size", 400);
+        }
 
-        //authToken.setToken(hashGenerator.encode(challenge.toString() + currentTime));
-        //authToken.setAuthState(AuthState.HELLO);
-        //authToken.setExpiration(new Timestamp(currentTime));
-        //authToken.setChallenge(postAuthQuery.getChallenge());
-        //authToken.setFingerprint(identity.getFingerprint());
+        identityService.createToken(plainChallenge);
+        return createResponseFromToken();
+    }
 
-//        entityManagerProvider.get().merge(authToken);
-//        identity.setToken(authToken);
-//        identity.setCipherSpec(true);
+    private PostAuthResponse createResponseFromToken() throws APIException {
+        String signedChallenge = signer.sign(identityService.getChallenge());
 
-        return authToken;
+        PostAuthResponse postAuthResponse = new PostAuthResponse();
+        postAuthResponse.setState(AuthState.HELLO);
+        postAuthResponse.setChallenge(signedChallenge);
+        postAuthResponse.setToken(identityService.getTokenId());
+
+        return postAuthResponse;
     }
 }

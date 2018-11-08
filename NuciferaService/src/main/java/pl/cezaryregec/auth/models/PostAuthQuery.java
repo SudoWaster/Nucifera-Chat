@@ -1,4 +1,4 @@
-package pl.cezaryregec.auth.service;
+package pl.cezaryregec.auth.models;
 
 import lombok.Data;
 import pl.cezaryregec.auth.ClientAuthState;
@@ -10,6 +10,6 @@ public @Data
 class PostAuthQuery implements Serializable {
     private static final long serialVersionUID = 7286090064689087685L;
 
-    private ClientAuthState authState;
+    private ClientAuthState state;
     private String challenge;
 }

@@ -39,7 +39,7 @@ public class APIException extends Exception {
         return message;
     }
 
-    @JsonProperty("errorCode")
+    @JsonProperty("error")
     public Integer getErrorCode() {
         return errorCode;
     }

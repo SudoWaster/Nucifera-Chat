@@ -8,7 +8,9 @@ import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import javax.annotation.Priority;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.Provider;
 
+@Provider
 @Priority(1)
 public class GuiceFeature implements Feature {
 

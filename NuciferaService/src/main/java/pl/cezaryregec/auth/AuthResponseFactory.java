@@ -1,27 +1,31 @@
 package pl.cezaryregec.auth;
 
 import com.google.inject.Inject;
+import pl.cezaryregec.auth.service.PostHandshake;
+import pl.cezaryregec.auth.session.IdentityService;
 import pl.cezaryregec.logger.ApplicationLogger;
 import pl.cezaryregec.auth.service.HelloError;
 import pl.cezaryregec.auth.service.PostAuth;
 import pl.cezaryregec.auth.service.PostHello;
-import pl.cezaryregec.auth.session.Identity;
 
 import javax.validation.constraints.NotNull;
 
 public class AuthResponseFactory {
 
-    private final PostHello postHello;
-    private final HelloError helloError;
-    private final Identity identity;
+    private final IdentityService identityService;
     private final ApplicationLogger applicationLogger;
 
+    private final PostHello postHello;
+    private final PostHandshake postHandshake;
+    private final HelloError helloError;
+
     @Inject
-    public AuthResponseFactory(PostHello postHello, HelloError helloError, Identity identity, ApplicationLogger applicationLogger) {
+    public AuthResponseFactory(PostHello postHello, HelloError helloError, IdentityService identityService, ApplicationLogger applicationLogger, PostHandshake postHandshake) {
         this.postHello = postHello;
         this.helloError = helloError;
-        this.identity = identity;
+        this.identityService = identityService;
         this.applicationLogger = applicationLogger;
+        this.postHandshake = postHandshake;
     }
 
     public PostAuth create(ClientAuthState state) {
@@ -36,6 +40,11 @@ public class AuthResponseFactory {
         switch (state) {
             case HELLO_INIT:
                 return postHello;
+            case HELLO_CLIENT_DONE:
+                return postHandshake;
+            case HELLO_CLIENT_REFUSED:
+                return helloError;
+
         }
 
         throw new IllegalStateException(state + " is not a valid ClientAuthState");
@@ -45,7 +54,6 @@ public class AuthResponseFactory {
         // an unexpected error has occured
         // eg. wrong keys used
         applicationLogger.log(e);
-        identity.invalidate();
         return helloError;
     }
 }

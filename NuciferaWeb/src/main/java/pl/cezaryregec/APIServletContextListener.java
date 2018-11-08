@@ -7,7 +7,9 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 import javax.servlet.ServletContextEvent;
+import javax.servlet.annotation.WebListener;
 
+@WebListener
 public class APIServletContextListener extends GuiceServletContextListener {
 
     static Injector injector;
@@ -20,7 +22,7 @@ public class APIServletContextListener extends GuiceServletContextListener {
      */
     @Override
     protected Injector getInjector() {
-        injector = Guice.createInjector(new APIServletModule(), new JpaPersistModule("NuciferaPersistence"));
+        injector = Guice.createInjector(new JpaPersistModule("NuciferaPersistence"), new APIServletModule());
         persistService = injector.getInstance(PersistService.class);
         persistService.start();
         return injector;
