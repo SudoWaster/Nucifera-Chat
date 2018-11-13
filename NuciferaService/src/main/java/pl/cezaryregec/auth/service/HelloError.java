@@ -18,7 +18,7 @@ public class HelloError implements PostAuth {
     public PostAuthResponse execute(PostAuthQuery postAuthQuery) {
         identityService.invalidate();
         PostAuthResponse postAuthResponse = new PostAuthResponse();
-        postAuthResponse.setState(AuthState.HELLO_FAIL);
+        postAuthResponse.setState(AuthState.FAIL);
         return postAuthResponse;
     }
 }

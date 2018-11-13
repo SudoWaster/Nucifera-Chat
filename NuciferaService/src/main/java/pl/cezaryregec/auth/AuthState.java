@@ -6,13 +6,9 @@ public enum AuthState {
      */
     HELLO,
     /**
-     * Hello failed
+     * HELLO or LOGIN has failed
      */
-    HELLO_FAIL,
-    /**
-     * Login failed
-     */
-    LOGIN_FAIL,
+    FAIL,
     /**
      * Used when HELLO or LOGIN is successful
      */

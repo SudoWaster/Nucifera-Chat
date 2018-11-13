@@ -27,15 +27,7 @@ public class AuthResponseFactory {
         this.postBye = postBye;
     }
 
-    public PostAuth create(ClientAuthState state) {
-        try {
-            return getProcessor(state);
-        } catch (Exception e) {
-            return handleError(e);
-        }
-    }
-
-    private PostAuth getProcessor(@NotNull ClientAuthState state) {
+    public PostAuth create(@NotNull ClientAuthState state) {
         switch (state) {
             case HELLO_INIT:
                 return postHello;
@@ -48,12 +40,5 @@ public class AuthResponseFactory {
         }
 
         throw new IllegalStateException(state + " is not a valid ClientAuthState");
-    }
-
-    private PostAuth handleError(Throwable e) {
-        // an unexpected error has occured
-        // eg. wrong keys used
-        applicationLogger.log(e);
-        return helloError;
     }
 }
