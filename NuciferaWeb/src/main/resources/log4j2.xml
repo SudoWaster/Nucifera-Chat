@@ -17,7 +17,6 @@
             </Policies>
         </RollingFile>
 
-
         <RollingFile name="communication-file">
             <FileName>logs/nc_communication.log</FileName>
             <PatternLayout>

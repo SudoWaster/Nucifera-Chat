@@ -4,10 +4,12 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.servlet.RequestScoped;
 import pl.cezaryregec.auth.models.AuthToken;
+import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.crypt.HashGenerator;
 import pl.cezaryregec.exception.APIException;
 
 import javax.persistence.EntityManager;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Optional;
 
@@ -15,18 +17,20 @@ import java.util.Optional;
 public class IdentityService {
     private final Provider<EntityManager> entityManagerProvider;
     private final HashGenerator hashGenerator;
+    private final ConfigSupplier configSupplier;
 
     private Identity identity;
 
     @Inject
-    IdentityService(Provider<EntityManager> entityManagerProvider, HashGenerator hashGenerator) {
+    IdentityService(Provider<EntityManager> entityManagerProvider, HashGenerator hashGenerator, ConfigSupplier configSupplier) {
         this.entityManagerProvider = entityManagerProvider;
         this.hashGenerator = hashGenerator;
+        this.configSupplier = configSupplier;
         this.identity = new Identity();
     }
 
     /**
-     * Checks if current token session is valid
+     * Checks if current token session is valid - if a token exists, has not expired and has a valid fingerprint
      *
      * @return true if valid
      */
@@ -35,18 +39,33 @@ public class IdentityService {
             return false;
         }
 
-        Timestamp expirationTime = new Timestamp(System.currentTimeMillis());
-        boolean hasExpired = false; //identity.getToken().getExpiration().before(expirationTime);
         boolean fingerprintValid = identity.getFingerprint().equals(identity.getToken().get().getFingerprint());
-        return fingerprintValid && !hasExpired;
+        return fingerprintValid && !hasExpired();
     }
 
+    /**
+     * Checks if token has expired
+     *
+     * @return true if it has
+     */
+    public boolean hasExpired() {
+        if (!identity.getToken().isPresent()) {
+            return true;
+        }
+
+        BigInteger expirationFromConfig = configSupplier.get().getToken().getExpiration();
+        Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + expirationFromConfig.longValueExact());
+        return identity.getToken().get().getExpiration().before(expirationTime);
+    }
 
     /**
-     * Renews token to keep it valid
+     * Renews token to keep it valid or delete it if expired
      */
     public void renewToken() {
         if (!isTokenValid()) {
+            if (hasExpired()) {
+                invalidate();
+            }
             // no use renewing expired or non existent token
             return;
         }
