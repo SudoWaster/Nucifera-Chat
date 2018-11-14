@@ -1,5 +1,6 @@
 package pl.cezaryregec.filter;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.commons.io.IOUtils;
@@ -25,6 +26,12 @@ import java.nio.charset.StandardCharsets;
 @Priority(Priorities.AUTHENTICATION)
 public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
 
+    private static final ImmutableSet UNENCRYPTED_PATHS;
+
+    static {
+        UNENCRYPTED_PATHS = ImmutableSet.of("/auth");
+    }
+
     @Context
     private HttpServletRequest request;
 
@@ -44,22 +51,28 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
         String fingerprint = getFingerprint();
         identityServiceProvider.get().setFingerprint(fingerprint);
 
-        if (identityServiceProvider.get().isTokenValid()) {
-            identityServiceProvider.get().renewToken();
-        }
-
         String tokenId = context.getHeaders().getFirst("X-Nucifera-Token");
         if (tokenId != null) {
             identityServiceProvider.get().retrieveToken(tokenId);
         }
 
-        if (identityServiceProvider.get().hasCipherSpec()) {
+        if (identityServiceProvider.get().isTokenValid()) {
+            identityServiceProvider.get().renewToken();
+        }
+
+        boolean hasCipherSpec = identityServiceProvider.get().hasCipherSpec();
+        String servicePath = getServicePath(request.getRequestURI());
+        boolean mustBeEncrypted = !UNENCRYPTED_PATHS.contains(servicePath);
+
+        if (hasCipherSpec || !mustBeEncrypted) {
             try {
                 InputStream decryptedStream = getDecrypted(context);
                 context.setMediaType(MediaType.APPLICATION_JSON_TYPE);
                 context.setInputStream(decryptedStream);
             } catch (APIException e) {
                 securityLogger.log(e);
+                // do not parse that request
+                context.setInputStream(null);
                 throw new WebApplicationException(e);
             }
         }
@@ -74,6 +87,21 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
      */
     private String getFingerprint() {
         return request.getRemoteAddr() + request.getRemoteHost() + request.getHeader("User-Agent");
+    }
+
+    /**
+     * Parses service path from request URL
+     *
+     * @param requestURI request URI
+     * @return a service path like {@code /auth}
+     */
+    private String getServicePath(String requestURI) {
+        if (requestURI.length() <= 1) return requestURI;
+
+        int slashIndex = requestURI.indexOf("/", 1);
+        if (slashIndex == -1) return requestURI;
+
+        return requestURI.substring(0, slashIndex);
     }
 
     /**
