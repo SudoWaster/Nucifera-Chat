@@ -3,10 +3,10 @@
 version: 2018-11-14 12:45
 
 #### Table of contents
-* [Configuration file](#Configuration file)
-* [Communication log](#Communication log)
-* [Application log](#Application log)
-* [Security log](#Security log)
+* [Configuration file](#configuration-file)
+* [Communication log](#communication-log)
+* [Application log](#application-log)
+* [Security log](#security-log)
 
 ### Configuration file
 Nucifera-Chat uses standard Log4j 2 for logging. Please refer to [Log4j 2](https://logging.apache.org/log4j/2.x/manual/configuration.html) for configuration reference.

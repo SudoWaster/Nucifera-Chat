@@ -4,10 +4,10 @@ version: 2018-11-14 12:29
 
 #### Table of contents
 * [Description](#Description)
-* [Server-side setup](#Server-side setup)
-* [Client-side setup](#Client-side setup)
+* [Server-side setup](#server-side-setup)
+* [Client-side setup](#client-side-setup)
   * [Algorithms](#Algorithms)
-  * [Secure connection](#Secure connection)
+  * [Secure connection](#secure-connection)
 
 ### Description
 Nucifera-Chat uses additional layer of encryption to ensure that the client-server communication process is secure. 

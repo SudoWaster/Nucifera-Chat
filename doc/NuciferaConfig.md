@@ -4,7 +4,7 @@ version: 2018-11-14 12:27
 
 
 #### Table of contents
-* [Example file](#Example file)
+* [Example file](#example-file)
 * [NuciferaConfguration](#NuciferaConfiguration)
   * [Token](#Token)
 
