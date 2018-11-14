@@ -1,6 +1,6 @@
 # Nucifera-Chat
 ### Server communication encryption 
-version: 2018-11-14 12:29
+version: 2018-11-14 21:37
 
 #### Table of contents
 * [Description](#Description)
@@ -31,16 +31,9 @@ Prepare a set of **PKCS#8** in a pem file. These files should have the following
 -----END PRIVATE KEY-----
 ```
 
-`rsa_public.pem`:
-```
------BEGIN PUBLIC KEY-----
-(key bytes)
------END PUBLIC KEY-----
-```
+As you can see, key files should be named `rsa_private.pem`.
 
-As you can see, files should be names `rsa_private.pem` and `rsa_public.pem` accordingly.
-
-Place those files in your application resources path. For Glassfish it would be `lib/classes` (it may be also called shared libraries folder or something like this).
+Place this file in your application classpath. For Glassfish it would be `lib/classes` (it may be also called shared libraries folder or something like this).
 
 From now on, the server should give no error and the connection can be established successfully.
 
