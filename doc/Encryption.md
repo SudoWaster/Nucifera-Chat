@@ -1,6 +1,13 @@
 # Nucifera-Chat
-### Server encryption 
-version: 2018-11-14 11:59
+### Server communication encryption 
+version: 2018-11-14 12:29
+
+#### Table of contents
+* [Description](#Description)
+* [Server-side setup](#Server-side setup)
+* [Client-side setup](#Client-side setup)
+  * [Algorithms](#Algorithms)
+  * [Secure connection](#Secure connection)
 
 ### Description
 Nucifera-Chat uses additional layer of encryption to ensure that the client-server communication process is secure. 
@@ -60,6 +67,7 @@ Start your connection by a POST request to `/auth` with the following data
 	"challenge": "{RSA encrypted challenge}"
 }
 ```
+Your challenge should be a unique String. Allowed lengths are 16, 24 and 32 - AES does not support other sizes.
 
 Server should respond with `HELLO`, signed challenge and a token
 ```json

@@ -1,6 +1,12 @@
 # Nucifera-Chat
 ### nucifera.xml config
-version: 2018-11-14 11:27
+version: 2018-11-14 12:27
+
+
+#### Table of contents
+* [Example file](#Example file)
+* [NuciferaConfguration](#NuciferaConfiguration)
+  * [Token](#Token)
 
 ### Example file
 ```xml
@@ -12,10 +18,6 @@ version: 2018-11-14 11:27
     </Token>
 </NuciferaConfiguration>
 ```
-
-#### Table of contents
-* [NuciferaConfguration](#NuciferaConfiguration)
-  * [Token](#Token)
 
 ### NuciferaConfiguration
 The main section here is `NuciferaConfiguration`, which holds everything in this config file.
