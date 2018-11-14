@@ -14,6 +14,8 @@ Place your `rsa_private.pem` in the classpath (eg. `lib/classes`) and make sure 
 
 You will not be able to make a handshake without this step.
 
+Encryption process and configuration is described in [`doc/Encryption.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/Encryption.md)
+
 ### Configuration
 #### Logging
 Sample config file is located in `NuciferaWeb/resources/log4j2.xml`. Note that this file is also default config and all your logs 
@@ -22,7 +24,7 @@ will be saved in a application relative path (for Glassfish it would be `domains
 To override this config, place your log4j2.xml in the classpath (eg. `lib/classes` folder).
 
 #### Default config
-Default Nucifera server config is located in `NuciferaWeb/resources/nucifera.xml` file. See `doc/MainConfig` for more info.
+Default Nucifera server config is located in `NuciferaWeb/resources/nucifera.xml` file. See [`doc/NuciferaConfig.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/NuciferaConfig.md) for more info.
 
 # License
 It is licensed under GNU General Public License v.3 as of 29 June 2007. See the `LICENSE` file for more.

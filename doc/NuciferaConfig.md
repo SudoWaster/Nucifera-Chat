@@ -1,6 +1,6 @@
 # Nucifera-Chat
 ### nucifera.xml config
-version: 2018-11-13 01
+version: 2018-11-14 11:27
 
 ### Example file
 ```xml
@@ -17,10 +17,10 @@ version: 2018-11-13 01
 * [NuciferaConfguration](#NuciferaConfiguration)
   * [Token](#Token)
 
-#### NuciferaConfiguration
+### NuciferaConfiguration
 The main section here is `NuciferaConfiguration`, which holds everything in this config file.
 
-#### Token
+### Token
 `Token` is the section that stores any configuration regarding token and identity management.
 
 | Element    | Applicable values | Example |
