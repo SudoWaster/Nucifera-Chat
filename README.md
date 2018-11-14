@@ -1,16 +1,19 @@
 # Nucifera-Chat
-version: 2018-11-14 11:59
+version: 2018-11-14 23:21
 
 Nucifera Chat is a secure chat server with end-to-end encryption written in Java EE.
 
-#### Before you deploy
-##### JDBC
+## Thorough documentation
+See [`doc/DeployingNucifera.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/DeployingNucifera.md) and follow the steps from there.
+
+## Quick start
+### Before you deploy
+#### JDBC
 At first you should setup a JDBC resource of name `jdbc/nucifera` or specify your JTA data source in `persistence.xml`.
 
-If you are using Glassfish or Payara, you can also skip this by using sample `glassfish-resources.xml` file provided,
-but you might want to avoid using that in production.
+See [`doc/JDBCDatasource.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/JDBCDatasource.md) for more info.
 
-##### Encryption
+#### Encryption
 Client-server connection uses additional layer of encryption regardless of any other secure connection configuration and because of that you need to include a RSA key.
 
 Place your `rsa_private.pem` in the classpath (eg. `lib/classes`) and make sure it is a valid **PKCS#8** RSA private key.
@@ -30,6 +33,11 @@ See [`doc/Logging.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/d
 Default Nucifera server config is located in `NuciferaWeb/resources/nucifera.xml` file. 
 
 See [`doc/NuciferaConfig.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/NuciferaConfig.md) for more info.
+
+### Deploying the app
+On Glassfish: make sure to disable `Implicit CDI`. 
+
+For more info, see [`doc/DeployingNucifera.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/DeployingNucifera.md).
 
 # License
 It is licensed under GNU General Public License v.3 as of 29 June 2007. See the `LICENSE` file for more.

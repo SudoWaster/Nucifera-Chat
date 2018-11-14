@@ -6,6 +6,7 @@ import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
@@ -13,6 +14,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Priority(1)
 public class GuiceFeature implements Feature {
+
+    @Inject
+    ServiceLocator serviceLocator;
 
     GuiceFeature() {
     }
@@ -26,11 +30,9 @@ public class GuiceFeature implements Feature {
      */
     @Override
     public boolean configure(FeatureContext featureContext) {
-        ServiceLocator locator = ServiceLocatorProvider.getServiceLocator(featureContext);
+        GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
 
-        GuiceBridge.getGuiceBridge().initializeGuiceBridge(locator);
-
-        GuiceIntoHK2Bridge guiceBridge = locator.getService(GuiceIntoHK2Bridge.class);
+        GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
         guiceBridge.bridgeGuiceInjector(APIServletContextListener.injector);
 
         return true;
