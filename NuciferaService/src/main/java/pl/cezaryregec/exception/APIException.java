@@ -1,8 +1,10 @@
 package pl.cezaryregec.exception;
 
 import javax.ws.rs.ClientErrorException;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APIException extends Exception {
     private static final long serialVersionUID = -5611226621818155268L;
 

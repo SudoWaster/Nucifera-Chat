@@ -2,6 +2,7 @@ package pl.cezaryregec.exception;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties({"cause", "stackTrace", "localizedMessage", "suppressed"})
@@ -12,14 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
         isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         creatorVisibility = JsonAutoDetect.Visibility.NONE
 )
-public class CleanAPIException extends APIException {
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CleanAPIException extends APIException {
     private static final long serialVersionUID = -9147380940962903848L;
 
     private Integer errorCode;
     private String message;
 
-    public CleanAPIException(String message, Integer errorCode) {
+    CleanAPIException(String message, Integer errorCode) {
         super(message);
         this.message = message;
         this.errorCode = errorCode;
