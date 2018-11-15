@@ -2,6 +2,8 @@ package pl.cezaryregec.logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -15,10 +17,18 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import pl.cezaryregec.config.ConfigSupplier;
 
 public class CommunicationLogger {
     private static final Logger LOGGER = LogManager.getLogger("communication");
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final ConfigSupplier configSupplier;
+
+    @Inject
+    public CommunicationLogger(ConfigSupplier configSupplier) {
+        this.configSupplier = configSupplier;
+    }
 
     /**
      * Logs communication
@@ -27,7 +37,7 @@ public class CommunicationLogger {
      * @param responseContext a {@link ContainerResponseContext} from filter
      * @throws IOException when entity InputStream is closed or corrupted
      */
-    public static void log(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+    public void log(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
         Level level = Level.ERROR;
         if (isSuccessful(responseContext.getStatusInfo())) {
             level = Level.INFO;
@@ -46,7 +56,7 @@ public class CommunicationLogger {
      * @param requestContext a {@link ContainerRequestContext} from filter
      * @throws IOException when InputStream is closed or corrupted
      */
-    public static void log(ContainerRequestContext requestContext) throws IOException {
+    public void log(ContainerRequestContext requestContext) throws IOException {
         String request = prepareRequestLog(requestContext);
         LOGGER.log(Level.INFO, "[ REQUEST ] " + request);
     }
@@ -56,7 +66,7 @@ public class CommunicationLogger {
      *
      * @param responseContext a {@link ContainerResponseContext} from filter
      */
-    public static void log(ContainerResponseContext responseContext) {
+    public void log(ContainerResponseContext responseContext) {
         Level level = Level.ERROR;
         if (isSuccessful(responseContext.getStatusInfo())) {
             level = Level.INFO;
@@ -71,7 +81,7 @@ public class CommunicationLogger {
      * @param status status info from {@link ContainerResponseContext}
      * @return {@code true} if status is in HTTP 2xx family
      */
-    private static boolean isSuccessful(Response.StatusType status) {
+    private boolean isSuccessful(Response.StatusType status) {
         return Response.Status.Family.SUCCESSFUL.equals(status.getFamily());
     }
 
@@ -82,7 +92,7 @@ public class CommunicationLogger {
      * @return formatted output
      * @throws IOException when entity InputStream parsing error occurs
      */
-    public static String prepareRequestLog(ContainerRequestContext requestContext) throws IOException {
+    public String prepareRequestLog(ContainerRequestContext requestContext) throws IOException {
         String request = requestContext.getMethod() + ": " + requestContext.getUriInfo().getRequestUri() + "\n";
         request += formatStringHeaders(requestContext.getHeaders());
 
@@ -101,9 +111,13 @@ public class CommunicationLogger {
      * @param responseContext a response
      * @return formatted output
      */
-    public static String prepareResponseLog(ContainerResponseContext responseContext) {
+    public String prepareResponseLog(ContainerResponseContext responseContext) {
         String response = "Status: " + responseContext.getStatus() + "\n";
         response += formatStringHeaders(responseContext.getStringHeaders());
+
+        if (configSupplier.get().getDebug().getFormatLog()) {
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        }
 
         if (responseContext.hasEntity()) {
             String entity = "";
@@ -125,7 +139,7 @@ public class CommunicationLogger {
      * @param headers headers from request or response
      * @return formatted output
      */
-    private static String formatStringHeaders(MultivaluedMap<String, String> headers) {
+    private String formatStringHeaders(MultivaluedMap<String, String> headers) {
         String result = "";
         for (Map.Entry<String, List<String>> header : headers.entrySet()) {
             String entries = String.join(", ", header.getValue());

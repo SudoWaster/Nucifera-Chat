@@ -31,8 +31,8 @@ public class ApplicationConfig extends ResourceConfig {
     }
 
     private void registerFilters() {
-        register(RequestCommunicationLogFilter.class);
-        register(ResponseCommunicationLogFilter.class);
+        register(getInjected(RequestCommunicationLogFilter.class));
+        register(getInjected(ResponseCommunicationLogFilter.class));
         register(getInjected(RequestEncryptedReaderInterceptor.class));
         register(getInjected(ResponseEncryptedWriterInterceptor.class));
     }

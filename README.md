@@ -1,5 +1,5 @@
 # Nucifera-Chat
-version: 2018-11-14 23:21
+version: 2018-11-14 16:05
 
 Nucifera Chat is a secure chat server with end-to-end encryption written in Java EE.
 
@@ -7,9 +7,15 @@ Nucifera Chat is a secure chat server with end-to-end encryption written in Java
 See [`doc/DeployingNucifera.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/DeployingNucifera.md) and follow the steps from there.
 
 ## Quick start
+### Building
+This source is a standard Maven 2 project, to build it you have to run
+`mvn clean install`
+
+Maven will automatically resolve dependencies and pack a war file for you.
+
 ### Before you deploy
 #### JDBC
-At first you should setup a JDBC resource of name `jdbc/nucifera` or specify your JTA data source in `persistence.xml`.
+At first you should setup a JDBC resource named `jdbc/nucifera`.
 
 See [`doc/JDBCDatasource.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/JDBCDatasource.md) for more info.
 

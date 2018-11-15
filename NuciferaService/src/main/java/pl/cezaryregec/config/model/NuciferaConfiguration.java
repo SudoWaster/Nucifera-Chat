@@ -17,8 +17,8 @@ import java.io.Serializable;
 public @Data
 class NuciferaConfiguration implements Serializable {
 
-    @XmlElement(name = "DebugMode")
-    private Boolean debugMode;
+    @XmlElement(name = "Debug")
+    private DebugConfiguration debug;
 
     @XmlElement(name = "Token")
     private TokenConfiguration token;

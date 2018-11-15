@@ -42,7 +42,7 @@ public class APIExceptionMapper extends Throwable implements ExceptionMapper<Thr
             apiException.setErrorCode(((APIException) exception).getErrorCode());
         }
 
-        if (configSupplier.get().getDebugMode()) {
+        if (configSupplier.get().getDebug().getVerbose()) {
             return Response.status(apiException.getErrorCode()).entity(apiException).build();
         }
 

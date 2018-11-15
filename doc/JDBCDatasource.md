@@ -1,6 +1,6 @@
 # Nucifera-Chat
 ### Datasource configuration
-version: 2018-11-14 22:58
+version: 2018-11-15 16:01
 
 #### Table of contents
 * [Description](#Description)
@@ -17,15 +17,15 @@ This document contains an example connection configuration with Glassfish 5 and 
 
 ### Datasource prerequisites
 
-You will need a properly configured database with an account that can login, and create or modify tables. Check your database vendor and version to be sure which driver to use.
+You will need a properly configured database with an account that can login, create and modify data in a desired database.
 
-If this account has ALL WITH GRANT OPTION privileges, JPA should automatically create tables.
+If this account has ALL privileges, EclipseLink will automatically create or update existing tables (no need to manually prepare the database).
 
 ### Example with PostgreSQL
 Provided we have our database set up, we will configure the datasource.
 
 #### Driver
-Prepare your database driver. For PostgreSQL you can download one from [the official page](https://jdbc.postgresql.org/). We'll be using version 42.2.5, which is the most recent one as of 2018-11-14.
+Prepare your JDBC database driver. For PostgreSQL you can download one from [the official page](https://jdbc.postgresql.org/). We'll be using version 42.2.5, which is the most recent one as of 2018-11-14.
 Put this driver in your drivers folder. For Glassfish 5, it would be `glassfish/domains/${domain}/lib`. Then restart your server.
 
 #### Connection pool
