@@ -66,7 +66,7 @@ Server should respond with `HELLO`, signed challenge and a token
 ```json
 {
 	"state": "HELLO",
-	"token": "{your token}",
+	"token": "{your security}",
 	"challenge": "{your challenge signed}"
 }
 ```

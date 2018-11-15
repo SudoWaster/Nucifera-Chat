@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.commons.io.IOUtils;
 import pl.cezaryregec.auth.session.IdentityService;
+import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.crypt.SymmetricDecryptor;
 import pl.cezaryregec.exception.APIException;
 import pl.cezaryregec.logger.SecurityLogger;
@@ -33,17 +34,24 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
     }
 
     @Context
-    private HttpServletRequest request;
+    HttpServletRequest request;
 
     private final Provider<IdentityService> identityServiceProvider;
     private final SymmetricDecryptor decryptor;
     private final SecurityLogger securityLogger;
+    private final ConfigSupplier configSupplier;
 
     @Inject
-    public RequestEncryptedReaderInterceptor(Provider<IdentityService> identityServiceProvider, SymmetricDecryptor decryptor, SecurityLogger securityLogger) {
+    public RequestEncryptedReaderInterceptor(
+            Provider<IdentityService> identityServiceProvider,
+            SymmetricDecryptor decryptor,
+            SecurityLogger securityLogger,
+            ConfigSupplier configSupplier
+    ) {
         this.identityServiceProvider = identityServiceProvider;
         this.decryptor = decryptor;
         this.securityLogger = securityLogger;
+        this.configSupplier = configSupplier;
     }
 
     @Override
@@ -86,7 +94,7 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
      * @return String of distinct user client data
      */
     private String getFingerprint() {
-        return request.getRemoteAddr() + request.getRemoteHost() + request.getHeader("User-Agent");
+        return request.getRemoteAddr() + "\n" + request.getRemoteHost() + "\n" + request.getHeader("User-Agent");
     }
 
     /**
@@ -114,10 +122,45 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
      */
     private InputStream getDecrypted(ReaderInterceptorContext context) throws IOException, APIException {
         InputStream inputStream = context.getInputStream();
-        byte[] raw = IOUtils.toByteArray(inputStream);
+        byte[] input = IOUtils.toByteArray(inputStream);
+
+        if (configSupplier.get().getSecurity().getBase64()) {
+            return getDecryptedBase64(input);
+        } else {
+            return getDecryptedBytes(input);
+        }
+    }
+
+    /**
+     * Decrypt data sent as String in a Base64 format
+     *
+     * @param input byte array of a String with Base64 message
+     * @return decrypted stream
+     * @throws APIException when decryption error happens
+     */
+    private ByteArrayInputStream getDecryptedBase64(byte[] input) throws APIException {
+        String stringInput = new String(input, StandardCharsets.UTF_8);
+        String challenge = identityServiceProvider.get().getChallenge();
+        try {
+            String decrypted = decryptor.decrypt(stringInput, challenge);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decrypted.getBytes(StandardCharsets.UTF_8));
+            return byteArrayInputStream;
+        } catch (Exception e) {
+            throw new APIException(e);
+        }
+    }
+
+    /**
+     * Decrypt raw data sent as bytes
+     *
+     * @param input raw encrypted input
+     * @return decrypted stream
+     * @throws APIException when decryption error happens
+     */
+    private ByteArrayInputStream getDecryptedBytes(byte[] input) throws APIException {
         byte[] challenge = identityServiceProvider.get().getChallenge().getBytes(StandardCharsets.UTF_8);
         try {
-            byte[] decrypted = decryptor.decrypt(raw, challenge);
+            byte[] decrypted = decryptor.decrypt(input, challenge);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decrypted);
             return byteArrayInputStream;
         } catch (Exception e) {

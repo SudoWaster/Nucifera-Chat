@@ -5,8 +5,9 @@
 		<FormatLog>true</FormatLog>
 	</Debug>
 
-    <Token>
-        <!-- Token inactivity expiration in ms -->
-        <Expiration>1200000</Expiration>
-    </Token>
+	<Security>
+		<!-- Token inactivity expiration in ms -->
+		<TokenExpiration>1200000</TokenExpiration>
+		<ParseBase64>false</ParseBase64>
+	</Security>
 </NuciferaConfiguration>

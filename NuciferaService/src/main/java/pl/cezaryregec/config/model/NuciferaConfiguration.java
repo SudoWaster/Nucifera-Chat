@@ -20,6 +20,6 @@ class NuciferaConfiguration implements Serializable {
     @XmlElement(name = "Debug")
     private DebugConfiguration debug;
 
-    @XmlElement(name = "Token")
-    private TokenConfiguration token;
+    @XmlElement(name = "Security")
+    private SecurityConfiguration security;
 }

@@ -9,6 +9,7 @@ import pl.cezaryregec.crypt.rsa.RsaDecryptor;
 import pl.cezaryregec.crypt.rsa.RsaSigner;
 import pl.cezaryregec.exception.APIExceptionMapper;
 import pl.cezaryregec.filter.RequestEncryptedReaderInterceptor;
+import pl.cezaryregec.filter.ResponseEncryptedWriterInterceptor;
 
 public class APIServletModule extends ServletModule {
 
@@ -23,5 +24,9 @@ public class APIServletModule extends ServletModule {
         bind(SymmetricEncryptor.class).to(AesEncryptor.class);
         bind(SymmetricDecryptor.class).to(AesDecryptor.class);
         bind(AuthResponseFactory.class);
+
+        bind(APIExceptionMapper.class);
+        bind(RequestEncryptedReaderInterceptor.class);
+        bind(ResponseEncryptedWriterInterceptor.class);
     }
 }

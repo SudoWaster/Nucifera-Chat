@@ -31,7 +31,7 @@ public class IdentityService {
     }
 
     /**
-     * Checks if current token session is valid - if a token exists, has not expired and has a valid fingerprint
+     * Checks if current token session is valid - if a security exists, has not expired and has a valid fingerprint
      *
      * @return true if valid
      */
@@ -54,7 +54,7 @@ public class IdentityService {
             return true;
         }
 
-        Long expirationFromConfig = configSupplier.get().getToken().getExpiration();
+        Long expirationFromConfig = configSupplier.get().getSecurity().getTokenExpiration();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         Timestamp expirationTime = new Timestamp(identity.getToken().get().getExpiration().getTime() + expirationFromConfig);
         return expirationTime.before(currentTimestamp);

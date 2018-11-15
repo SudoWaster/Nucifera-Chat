@@ -16,8 +16,11 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 public @Data
-class TokenConfiguration implements Serializable {
+class SecurityConfiguration implements Serializable {
 
-    @XmlElement(name = "Expiration")
-    private Long expiration;
+    @XmlElement(name = "TokenExpiration")
+    private Long tokenExpiration;
+
+    @XmlElement(name = "ParseBase64")
+    private Boolean base64;
 }

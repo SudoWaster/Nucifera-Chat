@@ -1,12 +1,12 @@
 # Nucifera-Chat
 ### nucifera.xml config
-version: 2018-11-15 15:58
+version: 2018-11-15 16:35
 
 #### Table of contents
 * [Example file](#example-file)
 * [NuciferaConfguration](#NuciferaConfiguration)
 	* [Debug](#debug)
-  * [Token](#Token)
+  * [Security](#security)
 
 ### Example file
 ```xml
@@ -17,10 +17,11 @@ version: 2018-11-15 15:58
 		<FormatLog>true</FormatLog>
 	</Debug>
 
-    <Token>
-        <!-- Token inactivity expiration in ms -->
-        <Expiration>1200000</Expiration>
-    </Token>
+	<Security>
+		<!-- Token inactivity expiration in ms -->
+		<TokenExpiration>1200000</TokenExpiration>
+		<ParseBase64>false</ParseBase64>
+	</Security>
 </NuciferaConfiguration>
 ```
 
@@ -36,9 +37,10 @@ The main section here is `NuciferaConfiguration`, which holds everything in this
 | FormatLog | Pretty print outgoing communication (may take more disk space) | `true` or `false` | `true` |
 
 
-### Token
-`Token` is the section that stores any configuration regarding token and identity management.
+### Security
+`Security` is the section that stores any configuration regarding token, identity management and encryption.
 
 | Element    | Explanation | Example | Default |
 | ---------- | ----------------- | ------- | --- |
-| Expiration | A token expiration in milliseconds measured since last token activity | `600000` [ms] (10 minutes) | `1200000` |
+| TokenExpiration | A token expiration in milliseconds measured since last security activity | `600000` [ms] (10 minutes) | `1200000` |
+| ParseBase64 | Whether the communication should be decrypted from and encrypted into Base64 form (or just raw bytes) | `true` or `false` | `false` |
