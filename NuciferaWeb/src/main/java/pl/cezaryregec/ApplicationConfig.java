@@ -2,7 +2,9 @@ package pl.cezaryregec;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 import pl.cezaryregec.exception.APIExceptionMapper;
 import pl.cezaryregec.filter.*;
 
@@ -12,6 +14,8 @@ public class ApplicationConfig extends ResourceConfig {
     private Injector injector;
 
     public ApplicationConfig() {
+        property(ServerProperties.MOXY_JSON_FEATURE_DISABLE, true);
+        register(JacksonFeature.class);
         register(new GuiceFeature());
 
         // register classes after Guice has been set up

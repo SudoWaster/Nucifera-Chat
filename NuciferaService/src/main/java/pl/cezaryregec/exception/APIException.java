@@ -1,16 +1,8 @@
 package pl.cezaryregec.exception;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import javax.ws.rs.ClientErrorException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonAutoDetect(
-        fieldVisibility = Visibility.NONE,
-        setterVisibility = Visibility.NONE,
-        getterVisibility = Visibility.NONE,
-        isGetterVisibility = Visibility.NONE,
-        creatorVisibility = Visibility.NONE
-)
 public class APIException extends Exception {
     private static final long serialVersionUID = -5611226621818155268L;
 
@@ -32,6 +24,15 @@ public class APIException extends Exception {
     public APIException(Throwable throwable) {
         this.message = throwable.getMessage();
         this.setStackTrace(throwable.getStackTrace());
+        this.errorCode = 500;
+
+        if (throwable instanceof ClientErrorException) {
+            this.errorCode = ((ClientErrorException) throwable).getResponse().getStatus();
+        }
+
+        if (throwable instanceof APIException) {
+            this.errorCode = ((APIException) throwable).errorCode;
+        }
     }
 
     @JsonProperty("message")

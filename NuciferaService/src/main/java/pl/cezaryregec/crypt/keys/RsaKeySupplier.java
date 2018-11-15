@@ -43,6 +43,7 @@ public class RsaKeySupplier implements Supplier<Optional<KeyPair>> {
             return Optional.of(createFromResource());
         } catch (Exception ex) {
             applicationLogger.log(ex);
+            securityLogger.log("There was a problem loading key. Cause:", Level.ERROR);
             securityLogger.log(ex);
         }
         return Optional.empty();

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <NuciferaConfiguration>
+	<DebugMode>false</DebugMode>
     <Token>
         <!-- Token inactivity expiration in ms -->
         <Expiration>1200000</Expiration>

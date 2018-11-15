@@ -1,6 +1,6 @@
 # Nucifera-Chat
 ### nucifera.xml config
-version: 2018-11-14 12:27
+version: 2018-11-15 01:26
 
 
 #### Table of contents
@@ -12,6 +12,7 @@ version: 2018-11-14 12:27
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <NuciferaConfiguration>
+		<DebugMode>false</DebugMode>
     <Token>
         <!-- Token inactivity expiration in ms -->
         <Expiration>1200000</Expiration>
@@ -22,9 +23,14 @@ version: 2018-11-14 12:27
 ### NuciferaConfiguration
 The main section here is `NuciferaConfiguration`, which holds everything in this config file.
 
+| Element | Explanation | Example |
+| --- | --- | --- |
+| DebugMode | Changes visibility of more detailed debug info in responses | `true` or `false` 
+
+
 ### Token
 `Token` is the section that stores any configuration regarding token and identity management.
 
-| Element    | Applicable values | Example |
+| Element    | Explanation | Example |
 | ---------- | ----------------- | ------- |
 | Expiration | A token expiration in milliseconds measured since last token activity | `1200000` (20 minutes) |

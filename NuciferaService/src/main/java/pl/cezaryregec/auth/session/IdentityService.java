@@ -53,8 +53,8 @@ public class IdentityService {
             return true;
         }
 
-        BigInteger expirationFromConfig = configSupplier.get().getToken().getExpiration();
-        Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + expirationFromConfig.longValueExact());
+        Long expirationFromConfig = configSupplier.get().getToken().getExpiration();
+        Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + expirationFromConfig);
         return identity.getToken().get().getExpiration().before(expirationTime);
     }
 

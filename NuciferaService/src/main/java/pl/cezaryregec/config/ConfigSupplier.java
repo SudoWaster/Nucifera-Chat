@@ -42,7 +42,7 @@ public class ConfigSupplier implements Supplier<NuciferaConfiguration> {
         JAXBContext context = null;
         Unmarshaller unmarshaller = null;
         try {
-            context = JAXBContext.newInstance(this.getClass());
+            context = JAXBContext.newInstance(NuciferaConfiguration.class);
             unmarshaller = context.createUnmarshaller();
             nuciferaConfiguration = (NuciferaConfiguration) unmarshaller.unmarshal(inputStream);
         } catch (JAXBException e) {

@@ -78,14 +78,14 @@ To verify server's identity, respond with `HELLO_CLIENT_DONE` and then switch to
 Example error code for not attaching challenge:
 ```json
 {
-	"errorCode": "400"
+	"error": "400"
 }
 ```
 
 Or with a challenge of an incorrect length:
 ```json
 {
-	"errorCode": "400",
+	"error": "400",
 	"message": "Wrong key size"
 }
 ```
