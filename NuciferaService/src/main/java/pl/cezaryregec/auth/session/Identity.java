@@ -1,9 +1,8 @@
 package pl.cezaryregec.auth.session;
 
+import java.util.Optional;
 import lombok.Data;
 import pl.cezaryregec.auth.models.AuthToken;
-
-import java.util.Optional;
 
 public @Data
 class Identity {

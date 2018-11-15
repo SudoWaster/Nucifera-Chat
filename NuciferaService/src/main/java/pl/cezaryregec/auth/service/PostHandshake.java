@@ -17,10 +17,14 @@ public class PostHandshake implements PostAuth {
 
     @Override
     public PostAuthResponse execute(PostAuthQuery postAuthQuery) throws APIException {
-        identityService.setCipherSpec(true);
 
         PostAuthResponse response = new PostAuthResponse();
-        response.setState(AuthState.AUTH_VALID);
+        if (identityService.isTokenValid()) {
+            identityService.setCipherSpec(true);
+            response.setState(AuthState.AUTH_VALID);
+        } else {
+            response.setState(AuthState.FAIL);
+        }
         return response;
     }
 }

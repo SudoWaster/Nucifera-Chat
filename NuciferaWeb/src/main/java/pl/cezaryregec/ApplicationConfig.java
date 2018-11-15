@@ -7,6 +7,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 import pl.cezaryregec.exception.APIExceptionMapper;
 import pl.cezaryregec.filter.*;
+import pl.cezaryregec.writer.ByteStreamBodyWriter;
 
 public class ApplicationConfig extends ResourceConfig {
 
@@ -17,6 +18,7 @@ public class ApplicationConfig extends ResourceConfig {
         property(ServerProperties.MOXY_JSON_FEATURE_DISABLE, true);
         register(JacksonFeature.class);
         register(new GuiceFeature());
+        register(ByteStreamBodyWriter.class);
 
         // register classes after Guice has been set up
         // so it can inject dependencies without any error

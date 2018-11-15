@@ -14,9 +14,6 @@ import pl.cezaryregec.crypt.HashGenerator;
 import pl.cezaryregec.crypt.aes.AesUtilities;
 import pl.cezaryregec.exception.APIException;
 
-import javax.persistence.EntityManager;
-import java.sql.Timestamp;
-
 public class PostHello implements PostAuth {
     private final IdentityService identityService;
     private final AsymmetricDecryptor decryptor;

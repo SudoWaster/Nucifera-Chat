@@ -2,6 +2,7 @@ package pl.cezaryregec.auth.session;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.persist.Transactional;
 import com.google.inject.servlet.RequestScoped;
 import pl.cezaryregec.auth.models.AuthToken;
 import pl.cezaryregec.config.ConfigSupplier;
@@ -9,7 +10,7 @@ import pl.cezaryregec.crypt.HashGenerator;
 import pl.cezaryregec.exception.APIException;
 
 import javax.persistence.EntityManager;
-import java.math.BigInteger;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Optional;
 
@@ -54,13 +55,15 @@ public class IdentityService {
         }
 
         Long expirationFromConfig = configSupplier.get().getToken().getExpiration();
-        Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + expirationFromConfig);
-        return identity.getToken().get().getExpiration().before(expirationTime);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        Timestamp expirationTime = new Timestamp(identity.getToken().get().getExpiration().getTime() + expirationFromConfig);
+        return expirationTime.before(currentTimestamp);
     }
 
     /**
      * Renews token to keep it valid or delete it if expired
      */
+    @Transactional
     public void renewToken() {
         if (!isTokenValid()) {
             if (hasExpired()) {
@@ -79,19 +82,33 @@ public class IdentityService {
      *
      * @param token {@link AuthToken} containing authentication data
      */
-    public void setToken(AuthToken token) {
+    @Transactional
+    public void setToken(@NotNull AuthToken token) {
         invalidate();
+        AuthToken managedToken = entityManagerProvider.get().find(AuthToken.class, token.getToken());
         token.setFingerprint(identity.getFingerprint());
+        if (managedToken != null) {
+            entityManagerProvider.get().merge(token);
+        } else {
+            entityManagerProvider.get()
+                                 .persist(token);
+        }
         identity.setToken(Optional.of(token));
-        entityManagerProvider.get().merge(token);
     }
 
     /**
      * Invalidates token
      */
+    @Transactional
     public void invalidate() {
         if (identity.getToken().isPresent()) {
-            entityManagerProvider.get().remove(identity.getToken());
+            // make sure we have a managed entity
+            AuthToken token = entityManagerProvider.get().find(AuthToken.class, identity.getToken().get().getToken());
+
+            if (token != null) {
+                entityManagerProvider.get()
+                                     .remove(token);
+            }
         }
         identity.setToken(Optional.empty());
     }
@@ -110,11 +127,12 @@ public class IdentityService {
      *
      * @param enabled {@code true} if symmetrical encryption enabled
      */
+    @Transactional
     public void setCipherSpec(Boolean enabled) {
         if (identity.getToken().isPresent()) {
             AuthToken token = identity.getToken().get();
             token.setCipherSpec(enabled);
-            setToken(token);
+            entityManagerProvider.get().merge(token);
         }
     }
 
@@ -162,6 +180,7 @@ public class IdentityService {
      *
      * @return {@link String} current request token
      */
+    @Transactional
     public String getTokenId() {
         if (identity.getToken().isPresent()) {
             return identity.getToken().get().getToken();
@@ -174,8 +193,14 @@ public class IdentityService {
      *
      * @param id request token
      */
+    @Transactional
     public void retrieveToken(String id) {
         AuthToken token = entityManagerProvider.get().find(AuthToken.class, id);
-        setToken(token);
+        if (token != null) {
+            setToken(token);
+        } else {
+            identity.setToken(Optional.empty());
+        }
     }
 }
+
