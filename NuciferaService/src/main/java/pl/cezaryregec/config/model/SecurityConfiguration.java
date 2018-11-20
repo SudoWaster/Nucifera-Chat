@@ -23,4 +23,7 @@ class SecurityConfiguration implements Serializable {
 
     @XmlElement(name = "ParseBase64")
     private Boolean base64;
+
+    @XmlElement(name = "Salt")
+    private String salt;
 }

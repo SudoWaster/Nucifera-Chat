@@ -6,8 +6,11 @@ import com.google.inject.persist.Transactional;
 import com.google.inject.servlet.RequestScoped;
 import pl.cezaryregec.auth.models.AuthToken;
 import pl.cezaryregec.config.ConfigSupplier;
+import pl.cezaryregec.crypt.CredentialsCombiner;
 import pl.cezaryregec.crypt.HashGenerator;
 import pl.cezaryregec.exception.APIException;
+import pl.cezaryregec.user.UserService;
+import pl.cezaryregec.user.models.User;
 
 import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
@@ -19,14 +22,18 @@ public class IdentityService {
     private final Provider<EntityManager> entityManagerProvider;
     private final HashGenerator hashGenerator;
     private final ConfigSupplier configSupplier;
+    private final UserService userService;
+    private final CredentialsCombiner credentialsCombiner;
 
     private Identity identity;
 
     @Inject
-    IdentityService(Provider<EntityManager> entityManagerProvider, HashGenerator hashGenerator, ConfigSupplier configSupplier) {
+    IdentityService(Provider<EntityManager> entityManagerProvider, HashGenerator hashGenerator, ConfigSupplier configSupplier, UserService userService, CredentialsCombiner credentialsCombiner) {
         this.entityManagerProvider = entityManagerProvider;
         this.hashGenerator = hashGenerator;
         this.configSupplier = configSupplier;
+        this.userService = userService;
+        this.credentialsCombiner = credentialsCombiner;
         this.identity = new Identity();
     }
 
@@ -201,6 +208,32 @@ public class IdentityService {
         } else {
             identity.setToken(Optional.empty());
         }
+    }
+
+    /**
+     * Login user with provided credentials
+     *
+     * @param username user name
+     * @param password password
+     * @return false if login was not successful
+     */
+    @Transactional
+    public boolean loginUser(String username, String password) throws APIException {
+        User user = userService.getUser(username);
+
+        if (user != null) {
+            String salt = configSupplier.get().getSecurity().getSalt();
+            String encodedPassword = credentialsCombiner.combine(username, password, salt);
+            String hashedPassword = hashGenerator.encode(encodedPassword);
+            if (hashedPassword.equals(user.getPassword())) {
+                AuthToken token = identity.getToken().get();
+                token.setUser(user);
+                setToken(token);
+                return  true;
+            }
+        }
+
+        return false;
     }
 }
 

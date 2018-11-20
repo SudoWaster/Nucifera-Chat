@@ -1,6 +1,7 @@
 package pl.cezaryregec.auth.models;
 
 import lombok.Data;
+import pl.cezaryregec.user.models.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -10,8 +11,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tokens")
-public @Data
-class AuthToken implements Serializable {
+public @Data class AuthToken implements Serializable {
     private static final long serialVersionUID = -3873109846898344297L;
 
     @Id
@@ -33,6 +33,10 @@ class AuthToken implements Serializable {
 
     @Column(name = "challenge")
     private String challenge;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public AuthToken() {
         this.token = "null" + System.currentTimeMillis();

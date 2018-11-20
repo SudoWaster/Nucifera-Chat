@@ -9,5 +9,6 @@
 		<!-- Token inactivity expiration in ms -->
 		<TokenExpiration>1200000</TokenExpiration>
 		<ParseBase64>false</ParseBase64>
+		<Salt>your_salt_here</Salt>
 	</Security>
 </NuciferaConfiguration>
