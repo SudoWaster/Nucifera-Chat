@@ -1,6 +1,6 @@
 # Nucifera-Chat
 ### Deploying the app
-version: 2018-11-14 23:17
+version: 2018-12-04 13:01
 
 #### Table of contents
 * [Prerequisites](#prerequisites)
@@ -14,10 +14,12 @@ Please refer to the following before you deploy
 
 | Description | Link |
 | --- | --- |
-| **Datasource configuration** (required) | [`doc/JDBCDatasource.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/JDBCDatasource.md) |
-| **Encryption** (required) | [`doc/Encryption.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/Encryption.md) |
-| **nucifera.xml config** | [`doc/NuciferaConfig.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/NuciferaConfig.md) |
-| **Loggers** | [`doc/Logging.md`](https://github.com/SudoWaster/Nucifera-Chat/blob/master/doc/Logging.md) |
+| **Datasource configuration** (required) | [`JDBCDatasource.md`](./JDBCDatasource.md) |
+| **Encryption** (required/optional) | [`Encryption.md`](./Encryption.md) |
+| **nucifera.xml config** | [`NuciferaConfig.md`](./NuciferaConfig.md) |
+| **Loggers** | [`Logging.md`](./Logging.md) |
+
+You can opt out of additional encryption by [setting AdditionalEncryption to false](./Encryption.md#security).
 
 ### Deploying your app
 #### Glassfish 5

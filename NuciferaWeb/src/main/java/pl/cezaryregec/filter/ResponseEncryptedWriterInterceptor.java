@@ -57,9 +57,10 @@ public class ResponseEncryptedWriterInterceptor implements WriterInterceptor {
     @Override
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
         boolean hasCipherSpec = identityService.get().hasCipherSpec();
+        boolean isEncryptionEnabled = configSupplier.get().getSecurity().getAdditionalEncryption();
         boolean isJson = MediaType.APPLICATION_JSON_TYPE.equals(context.getMediaType());
 
-        if (hasCipherSpec && isJson) {
+        if (isEncryptionEnabled && hasCipherSpec && isJson) {
             try {
                 tryEncryptContext(context);
             } catch (Exception e) {

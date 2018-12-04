@@ -1,6 +1,6 @@
 # Nucifera-Chat
 ### Server communication encryption 
-version: 2018-11-14 21:37
+version: 2018-12-04 13:03
 
 #### Table of contents
 * [Description](#Description)
@@ -10,7 +10,7 @@ version: 2018-11-14 21:37
   * [Secure connection](#secure-connection)
 
 ### Description
-Nucifera-Chat uses additional layer of encryption to ensure that the client-server communication process is secure. 
+Nucifera-Chat uses an **optional** additional layer of encryption to ensure that the client-server communication process is secure. 
 You can use SSL/TLS within your JEE server instance (and this is very much recommended), but just to prevent i.a. password leaks (by a MITM attack for example).
 
 The initial communication should always start with `HELLO_INIT` from the client if the client has not aquired a token yet. Client should send a challenge of length 16, 24 or 32 characters encrypted with server's RSA public key.
@@ -19,7 +19,9 @@ The initial communication should always start with `HELLO_INIT` from the client 
 
 The client confirms that it trusts the server by issuing `HELLO_CLIENT_DONE` and the communication from now on is encrypted with AES using the challenge sent by a client.
 
-NOTE: As you can see, it's the client responsibility to sent a unique challenge and correctly connect to a trusted server. If any of these processes is handled incorrectly by the client, it may connect to a suspicious (and incorrect) server.
+**NOTE** You can disable this additional encryption by [setting AdditionalEncryption to false](./Encryption.md#security)
+
+As you can see, it's the client responsibility to sent a unique challenge and correctly connect to a trusted server. If any of these processes is handled incorrectly by the client, it may connect to a suspicious (and incorrect) server.
 
 ### Server-side setup
 Prepare a set of **PKCS#8** in a pem file. These files should have the following format:

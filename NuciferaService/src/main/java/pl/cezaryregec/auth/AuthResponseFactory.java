@@ -9,20 +9,15 @@ import javax.validation.constraints.NotNull;
 
 public class AuthResponseFactory {
 
-    private final IdentityService identityService;
-    private final ApplicationLogger applicationLogger;
-
     private final PostHello postHello;
     private final PostHandshake postHandshake;
     private final HelloError helloError;
     private final PostBye postBye;
 
     @Inject
-    public AuthResponseFactory(PostHello postHello, HelloError helloError, IdentityService identityService, ApplicationLogger applicationLogger, PostHandshake postHandshake, PostBye postBye) {
+    public AuthResponseFactory(PostHello postHello, HelloError helloError, PostHandshake postHandshake, PostBye postBye) {
         this.postHello = postHello;
         this.helloError = helloError;
-        this.identityService = identityService;
-        this.applicationLogger = applicationLogger;
         this.postHandshake = postHandshake;
         this.postBye = postBye;
     }

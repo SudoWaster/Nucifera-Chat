@@ -8,7 +8,10 @@
 	<Security>
 		<!-- Token inactivity expiration in ms -->
 		<TokenExpiration>1200000</TokenExpiration>
+		<!-- Encrypt client-server communication using server key -->
+		<AdditionalEncryption>true</AdditionalEncryption>
+		<!-- Use Base64 instead of encryped byte streams -->
 		<ParseBase64>false</ParseBase64>
-		<Salt>your_salt_here</Salt>
+		<Salt>do_not_use_default</Salt>
 	</Security>
 </NuciferaConfiguration>

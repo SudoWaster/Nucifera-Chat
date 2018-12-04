@@ -59,18 +59,21 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
         String fingerprint = getFingerprint();
         identityServiceProvider.get().setFingerprint(fingerprint);
 
+        // get token if it exists
         String tokenId = context.getHeaders().getFirst("X-Nucifera-Token");
         if (tokenId != null) {
             identityServiceProvider.get().retrieveToken(tokenId);
         }
 
+        // check for validity and renew
         if (identityServiceProvider.get().isTokenValid()) {
             identityServiceProvider.get().renewToken();
         }
 
         boolean hasCipherSpec = identityServiceProvider.get().hasCipherSpec();
         String servicePath = getServicePath(request.getRequestURI());
-        boolean mustBeEncrypted = !UNENCRYPTED_PATHS.contains(servicePath);
+        boolean isEncryptionEnabled = configSupplier.get().getSecurity().getAdditionalEncryption();
+        boolean mustBeEncrypted = isEncryptionEnabled && !UNENCRYPTED_PATHS.contains(servicePath);
 
         if (hasCipherSpec || !mustBeEncrypted) {
             try {
