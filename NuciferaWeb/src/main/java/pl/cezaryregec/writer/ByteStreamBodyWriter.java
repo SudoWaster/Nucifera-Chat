@@ -23,6 +23,17 @@ public class ByteStreamBodyWriter implements MessageBodyWriter<ByteArrayOutputSt
     }
 
     @Override
+    public long getSize(
+            ByteArrayOutputStream byteArrayOutputStream,
+            Class<?> type,
+            Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType
+    ) {
+        return -1;
+    }
+
+    @Override
     public void writeTo(
             ByteArrayOutputStream byteArrayOutputStream,
             Class<?> aClass,

@@ -73,9 +73,9 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
         boolean hasCipherSpec = identityServiceProvider.get().hasCipherSpec();
         String servicePath = getServicePath(request.getRequestURI());
         boolean isEncryptionEnabled = configSupplier.get().getSecurity().getAdditionalEncryption();
-        boolean mustBeEncrypted = isEncryptionEnabled && !UNENCRYPTED_PATHS.contains(servicePath);
+        boolean mustBeEncrypted = !UNENCRYPTED_PATHS.contains(servicePath);
 
-        if (hasCipherSpec || !mustBeEncrypted) {
+        if (isEncryptionEnabled && (hasCipherSpec || !mustBeEncrypted)) {
             try {
                 InputStream decryptedStream = getDecrypted(context);
                 context.setMediaType(MediaType.APPLICATION_JSON_TYPE);

@@ -1,29 +1,38 @@
 package pl.cezaryregec.auth.service;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import pl.cezaryregec.auth.AuthState;
-import pl.cezaryregec.auth.models.AuthToken;
 import pl.cezaryregec.auth.models.PostAuthQuery;
 import pl.cezaryregec.auth.models.PostAuthResponse;
-import pl.cezaryregec.auth.session.Identity;
 import pl.cezaryregec.auth.session.IdentityService;
+import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.crypt.AsymmetricDecryptor;
 import pl.cezaryregec.crypt.AsymmetricSigner;
-import pl.cezaryregec.crypt.HashGenerator;
 import pl.cezaryregec.crypt.aes.AesUtilities;
 import pl.cezaryregec.exception.APIException;
+
+import java.util.Random;
 
 public class PostHello implements PostAuth {
     private final IdentityService identityService;
     private final AsymmetricDecryptor decryptor;
     private final AsymmetricSigner signer;
+    private final ConfigSupplier configSupplier;
+    private final Random random;
 
     @Inject
-    PostHello(IdentityService identityService, AsymmetricDecryptor decryptor, AsymmetricSigner signer) {
+    PostHello(
+            IdentityService identityService,
+            AsymmetricDecryptor decryptor,
+            AsymmetricSigner signer,
+            ConfigSupplier configSupplier,
+            Random random
+    ) {
         this.identityService = identityService;
         this.decryptor = decryptor;
         this.signer = signer;
+        this.configSupplier = configSupplier;
+        this.random = random;
     }
 
     /**
@@ -35,11 +44,14 @@ public class PostHello implements PostAuth {
      */
     @Override
     public PostAuthResponse execute(PostAuthQuery postAuthQuery) throws APIException {
-        String challenge = postAuthQuery.getChallenge();
-        String plainChallenge = decryptor.decrypt(challenge);
+        String plainChallenge = String.valueOf(random.nextLong());
+        if (configSupplier.get().getSecurity().getAdditionalEncryption()) {
+            String challenge = postAuthQuery.getChallenge();
+            plainChallenge = decryptor.decrypt(challenge);
 
-        if (!AesUtilities.SUPPORTED_KEY_SIZES.contains(plainChallenge.length())) {
-            throw new APIException("Wrong key size", 400);
+            if (!AesUtilities.SUPPORTED_KEY_SIZES.contains(plainChallenge.length())) {
+                throw new APIException("Wrong key size", 400);
+            }
         }
 
         identityService.createToken(plainChallenge);
@@ -47,11 +59,12 @@ public class PostHello implements PostAuth {
     }
 
     private PostAuthResponse createResponseFromToken() throws APIException {
-        String signedChallenge = signer.sign(identityService.getChallenge());
-
         PostAuthResponse postAuthResponse = new PostAuthResponse();
         postAuthResponse.setState(AuthState.HELLO);
-        postAuthResponse.setChallenge(signedChallenge);
+        if (configSupplier.get().getSecurity().getAdditionalEncryption()) {
+            String signedChallenge = signer.sign(identityService.getChallenge());
+            postAuthResponse.setChallenge(signedChallenge);
+        }
         postAuthResponse.setToken(identityService.getTokenId());
 
         return postAuthResponse;

@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 @Singleton
 public class ConfigSupplier implements Supplier<NuciferaConfiguration> {
     private static final String NUCIFERA_CONFIG_FILENAME = "nucifera.xml";
+    private static final String DEFAULT_CONFIG_FILENAME = "default-nucifera.xml";
+
 
     private final ApplicationLogger applicationLogger;
     private NuciferaConfiguration nuciferaConfiguration;
@@ -36,9 +38,14 @@ public class ConfigSupplier implements Supplier<NuciferaConfiguration> {
      *
      * If it fails, logs it to application log
      * and from now on anything using this config will throw NullPointerException
+     *
+     * By default, it uses {@value #DEFAULT_CONFIG_FILENAME} file from resources
      */
     private void loadConfigFromResource() {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(NUCIFERA_CONFIG_FILENAME);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(DEFAULT_CONFIG_FILENAME);
+        if (getClass().getResource(NUCIFERA_CONFIG_FILENAME) != null) {
+            inputStream = getClass().getResourceAsStream(NUCIFERA_CONFIG_FILENAME);
+        }
         JAXBContext context = null;
         Unmarshaller unmarshaller = null;
         try {

@@ -1,6 +1,6 @@
 # Nucifera-Chat
 ### nucifera.xml config
-version: 2018-12-04 13:15
+version: 2018-12-04 14:53
 
 #### Table of contents
 * [Example file](#example-file)
@@ -9,6 +9,7 @@ version: 2018-12-04 13:15
     * [Security](#security)
 
 ### Example file
+Filename: nucifera.xml
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <NuciferaConfiguration>

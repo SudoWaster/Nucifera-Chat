@@ -21,7 +21,7 @@ public class PostHandshake implements PostAuth {
         PostAuthResponse response = new PostAuthResponse();
         if (identityService.isTokenValid()) {
             identityService.setCipherSpec(true);
-            response.setState(AuthState.AUTH_VALID);
+            response.setState(AuthState.HELLO_VALID);
         } else {
             response.setState(AuthState.FAIL);
         }

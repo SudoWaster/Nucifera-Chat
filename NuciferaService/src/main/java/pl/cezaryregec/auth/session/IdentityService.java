@@ -92,6 +92,7 @@ public class IdentityService {
     @Transactional
     public void setToken(@NotNull AuthToken token) {
         invalidate();
+
         AuthToken managedToken = entityManagerProvider.get().find(AuthToken.class, token.getToken());
         token.setFingerprint(identity.getFingerprint());
         if (managedToken != null) {
@@ -221,15 +222,15 @@ public class IdentityService {
     public boolean loginUser(String username, String password) throws APIException {
         User user = userService.getUser(username);
 
-        if (user != null) {
+        if (user != null && identity.getToken().isPresent()) {
             String salt = configSupplier.get().getSecurity().getSalt();
             String encodedPassword = credentialsCombiner.combine(username, password, salt);
             String hashedPassword = hashGenerator.encode(encodedPassword);
             if (hashedPassword.equals(user.getPassword())) {
                 AuthToken token = identity.getToken().get();
                 token.setUser(user);
-                setToken(token);
-                return  true;
+                entityManagerProvider.get().merge(token);
+                return true;
             }
         }
 

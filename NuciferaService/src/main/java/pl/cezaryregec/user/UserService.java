@@ -6,6 +6,9 @@ import com.google.inject.persist.Transactional;
 import pl.cezaryregec.user.models.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.ws.rs.NotFoundException;
 
 public class UserService {
 
@@ -18,6 +21,13 @@ public class UserService {
 
     @Transactional
     public User getUser(String username) {
-        return entityManagerProvider.get().find(User.class, username);
+        TypedQuery<User> query = entityManagerProvider.get().createNamedQuery("User.findByUsername", User.class);
+        query.setParameter("username", username);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new NotFoundException(ex);
+        }
     }
 }

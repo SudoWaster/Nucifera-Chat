@@ -5,6 +5,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <non-jta-data-source>jdbc/nucifera</non-jta-data-source>
         <class>pl.cezaryregec.auth.models.AuthToken</class>
+        <class>pl.cezaryregec.user.models.User</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>

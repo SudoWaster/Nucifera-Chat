@@ -20,7 +20,7 @@ public class PostLogin implements PostAuth {
         String username = postAuthQuery.getUsername();
         String password = postAuthQuery.getPassword();
         PostAuthResponse response = new PostAuthResponse();
-        response.setState(AuthState.FAIL);
+        response.setState(AuthState.LOGIN_FAIL);
 
         if (identityService.isTokenValid() && identityService.loginUser(username, password)) {
             response.setState(AuthState.AUTH_VALID);

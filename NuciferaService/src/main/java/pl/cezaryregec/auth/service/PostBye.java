@@ -21,7 +21,7 @@ public class PostBye implements PostAuth {
         identityService.invalidate();
 
         PostAuthResponse response = new PostAuthResponse();
-        response.setState(AuthState.AUTH_VALID);
+        response.setState(AuthState.HELLO_VALID);
         return response;
     }
 }
