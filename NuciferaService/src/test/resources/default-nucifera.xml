@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NuciferaConfiguration>
+    <Debug>
+        <Verbose>false</Verbose>
+        <FormatLog>true</FormatLog>
+    </Debug>
+
+    <Security>
+        <!-- Token inactivity expiration in ms -->
+        <TokenExpiration>1200000</TokenExpiration>
+        <!-- Encrypt client-server communication using server key -->
+        <AdditionalEncryption>false</AdditionalEncryption>
+        <!-- Use Base64 instead of encryped byte streams -->
+        <ParseBase64>false</ParseBase64>
+        <Salt>do_not_use_default</Salt>
+    </Security>
+</NuciferaConfiguration>

@@ -6,16 +6,15 @@ import com.google.inject.persist.Transactional;
 import com.google.inject.servlet.RequestScoped;
 import pl.cezaryregec.auth.models.AuthToken;
 import pl.cezaryregec.config.ConfigSupplier;
-import pl.cezaryregec.crypt.CredentialsCombiner;
 import pl.cezaryregec.crypt.HashGenerator;
 import pl.cezaryregec.exception.APIException;
-import pl.cezaryregec.user.UserService;
 import pl.cezaryregec.user.models.User;
 
 import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.NotAuthorizedException;
 import java.sql.Timestamp;
+import java.time.Clock;
 import java.util.Optional;
 
 @RequestScoped
@@ -23,19 +22,21 @@ public class IdentityService {
     private final Provider<EntityManager> entityManagerProvider;
     private final HashGenerator hashGenerator;
     private final ConfigSupplier configSupplier;
-    private final UserService userService;
-    private final CredentialsCombiner credentialsCombiner;
+    private final Clock clock;
 
-    private Identity identity;
+    private Identity identity = new Identity();
 
     @Inject
-    IdentityService(Provider<EntityManager> entityManagerProvider, HashGenerator hashGenerator, ConfigSupplier configSupplier, UserService userService, CredentialsCombiner credentialsCombiner) {
+    public IdentityService(
+            Provider<EntityManager> entityManagerProvider,
+            HashGenerator hashGenerator,
+            ConfigSupplier configSupplier,
+            Clock clock
+    ) {
         this.entityManagerProvider = entityManagerProvider;
         this.hashGenerator = hashGenerator;
         this.configSupplier = configSupplier;
-        this.userService = userService;
-        this.credentialsCombiner = credentialsCombiner;
-        this.identity = new Identity();
+        this.clock = clock;
     }
 
     /**
@@ -63,7 +64,7 @@ public class IdentityService {
         }
 
         Long expirationFromConfig = configSupplier.get().getSecurity().getTokenExpiration();
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        Timestamp currentTimestamp = new Timestamp(clock.millis());
         Timestamp expirationTime = new Timestamp(identity.getToken().get().getExpiration().getTime() + expirationFromConfig);
         return expirationTime.before(currentTimestamp);
     }
@@ -80,7 +81,7 @@ public class IdentityService {
             // no use renewing expired or non existent token
             return;
         }
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        Timestamp currentTime = new Timestamp(clock.millis());
         identity.getToken().get().setExpiration(currentTime);
         entityManagerProvider.get().merge(identity.getToken().get());
     }
@@ -95,7 +96,6 @@ public class IdentityService {
         invalidate();
 
         AuthToken managedToken = entityManagerProvider.get().find(AuthToken.class, token.getToken());
-        token.setFingerprint(identity.getFingerprint());
         if (managedToken != null) {
             entityManagerProvider.get().merge(token);
         } else {
@@ -170,17 +170,18 @@ public class IdentityService {
     /**
      * Creates new session token with given challenge
      *
-     * @param {@String} challenge used in encryption
+     * @param challenge {@String} challenge used in encryption
      * @throws APIException when cannot encode a token id
      */
     public void createToken(String challenge) throws APIException {
         AuthToken token = new AuthToken();
-        Long currentTime = System.currentTimeMillis();
+        Long currentTime = clock.millis();
         String tokenId = hashGenerator.encode(currentTime + identity.getFingerprint());
         token.setToken(tokenId);
         token.setExpiration(new Timestamp(System.currentTimeMillis()));
         token.setChallenge(challenge);
         token.setCipherSpec(false);
+        token.setFingerprint(identity.getFingerprint());
         setToken(token);
     }
 

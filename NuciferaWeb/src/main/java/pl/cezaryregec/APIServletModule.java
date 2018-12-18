@@ -12,6 +12,8 @@ import pl.cezaryregec.filter.RequestEncryptedReaderInterceptor;
 import pl.cezaryregec.filter.ResponseEncryptedWriterInterceptor;
 import pl.cezaryregec.heartbeat.service.HeartbeatService;
 
+import java.time.Clock;
+
 public class APIServletModule extends ServletModule {
 
     APIServletModule() {
@@ -19,6 +21,8 @@ public class APIServletModule extends ServletModule {
 
     @Override
     public void configureServlets() {
+        bind(Clock.class).toInstance(Clock.systemUTC());
+
         bind(HashGenerator.class).to(Sha256Generator.class);
         bind(AsymmetricDecryptor.class).to(RsaDecryptor.class);
         bind(AsymmetricSigner.class).to(RsaSigner.class);
