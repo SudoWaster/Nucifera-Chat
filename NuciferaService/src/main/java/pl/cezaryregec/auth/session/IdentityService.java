@@ -14,6 +14,7 @@ import pl.cezaryregec.user.models.User;
 
 import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.NotAuthorizedException;
 import java.sql.Timestamp;
 import java.util.Optional;
 
@@ -211,30 +212,33 @@ public class IdentityService {
         }
     }
 
+
     /**
-     * Login user with provided credentials
+     * Bind logged user to token
      *
-     * @param username user name
-     * @param password password
-     * @return false if login was not successful
+     * @param user logged user
      */
     @Transactional
-    public boolean loginUser(String username, String password) throws APIException {
-        User user = userService.getUser(username);
-
-        if (user != null && identity.getToken().isPresent()) {
-            String salt = configSupplier.get().getSecurity().getSalt();
-            String encodedPassword = credentialsCombiner.combine(username, password, salt);
-            String hashedPassword = hashGenerator.encode(encodedPassword);
-            if (hashedPassword.equals(user.getPassword())) {
-                AuthToken token = identity.getToken().get();
-                token.setUser(user);
-                entityManagerProvider.get().merge(token);
-                return true;
-            }
+    public void bindUser(User user) {
+        if (!identity.getToken().isPresent()) {
+            throw new NotAuthorizedException("Token is invalid");
         }
+        AuthToken token = identity.getToken().get();
+        token.setUser(user);
+        entityManagerProvider.get().merge(token);
+    }
 
-        return false;
+    /**
+     * Returns bound (logged) user
+     *
+     * @return user
+     */
+    public Optional<User> getBoundUser() {
+        if (identity.getToken().isPresent()) {
+            AuthToken token = identity.getToken().get();
+            return Optional.ofNullable(token.getUser());
+        }
+        return Optional.empty();
     }
 }
 

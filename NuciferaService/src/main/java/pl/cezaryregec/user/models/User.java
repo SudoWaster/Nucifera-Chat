@@ -4,6 +4,7 @@ import lombok.Data;
 import pl.cezaryregec.auth.models.AuthToken;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -22,6 +23,9 @@ public @Data class User {
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "lastseen")
+    private Timestamp lastSeen;
 
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL,

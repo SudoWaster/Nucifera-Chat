@@ -35,6 +35,7 @@ public class ApplicationConfig extends ResourceConfig {
         register(getInjected(ResponseCommunicationLogFilter.class));
         register(getInjected(RequestEncryptedReaderInterceptor.class));
         register(getInjected(ResponseEncryptedWriterInterceptor.class));
+        register(getInjected(PlainRequestTokenReceiverFilter.class));
     }
 
     /**

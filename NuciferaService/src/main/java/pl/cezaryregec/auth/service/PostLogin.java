@@ -6,13 +6,19 @@ import pl.cezaryregec.auth.models.PostAuthQuery;
 import pl.cezaryregec.auth.models.PostAuthResponse;
 import pl.cezaryregec.auth.session.IdentityService;
 import pl.cezaryregec.exception.APIException;
+import pl.cezaryregec.user.UserService;
+import pl.cezaryregec.user.models.User;
+
+import java.util.Optional;
 
 public class PostLogin implements PostAuth {
     private final IdentityService identityService;
+    private final UserService userService;
 
     @Inject
-    public PostLogin(IdentityService identityService) {
+    public PostLogin(IdentityService identityService, UserService userService) {
         this.identityService = identityService;
+        this.userService = userService;
     }
 
     @Override
@@ -22,7 +28,10 @@ public class PostLogin implements PostAuth {
         PostAuthResponse response = new PostAuthResponse();
         response.setState(AuthState.LOGIN_FAIL);
 
-        if (identityService.isTokenValid() && identityService.loginUser(username, password)) {
+        Optional<User> user = userService.loginAndGet(username, password);
+
+        if (identityService.isTokenValid() && user.isPresent()) {
+            identityService.bindUser(user.get());
             response.setState(AuthState.AUTH_VALID);
         }
 

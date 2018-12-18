@@ -10,6 +10,7 @@ import pl.cezaryregec.crypt.rsa.RsaSigner;
 import pl.cezaryregec.exception.APIExceptionMapper;
 import pl.cezaryregec.filter.RequestEncryptedReaderInterceptor;
 import pl.cezaryregec.filter.ResponseEncryptedWriterInterceptor;
+import pl.cezaryregec.heartbeat.service.HeartbeatService;
 
 public class APIServletModule extends ServletModule {
 
@@ -24,6 +25,7 @@ public class APIServletModule extends ServletModule {
         bind(SymmetricEncryptor.class).to(AesEncryptor.class);
         bind(SymmetricDecryptor.class).to(AesDecryptor.class);
         bind(AuthResponseFactory.class);
+        bind(HeartbeatService.class);
 
         bind(APIExceptionMapper.class);
         bind(RequestEncryptedReaderInterceptor.class);

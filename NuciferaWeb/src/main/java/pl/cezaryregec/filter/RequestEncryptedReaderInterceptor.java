@@ -56,7 +56,7 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
 
     @Override
     public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
-        String fingerprint = getFingerprint();
+        String fingerprint = FingerprintFactory.create(request);
         identityServiceProvider.get().setFingerprint(fingerprint);
 
         // get token if it exists
@@ -89,15 +89,6 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
         }
 
         return context.proceed();
-    }
-
-    /**
-     * Creates client fingerprint
-     *
-     * @return String of distinct user client data
-     */
-    private String getFingerprint() {
-        return request.getRemoteAddr() + "\n" + request.getRemoteHost() + "\n" + request.getHeader("User-Agent");
     }
 
     /**
