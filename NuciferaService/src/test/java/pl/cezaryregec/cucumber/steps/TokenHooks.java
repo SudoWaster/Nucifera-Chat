@@ -22,7 +22,7 @@ public class TokenHooks {
     }
 
     @Before("@TokenUsed")
-    public void init() {
+    public void initToken() {
         ApplicationLogger applicationLogger = Mockito.mock(ApplicationLogger.class);
         ConfigSupplier configSupplier = new ConfigSupplier(applicationLogger);
         HashGenerator hashGenerator = Mockito.mock(HashGenerator.class);
