@@ -14,6 +14,10 @@ public class ApplicationLogger implements NuciferaLoger {
 
     @Override
     public void log(Throwable exception) {
+        logException(exception, LOGGER);
+    }
+
+    static void logException(Throwable exception, Logger logger) {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PrintStream printStream = new PrintStream(baos, true, StandardCharsets.UTF_8.name())) {
             exception.printStackTrace(printStream);
@@ -24,7 +28,7 @@ public class ApplicationLogger implements NuciferaLoger {
         String message = exception.getMessage() + "\n";
         message += "Stack trace: " + stackTrace;
 
-        LOGGER.log(Level.ERROR, message);
+        logger.log(Level.ERROR, message);
     }
 
     @Override
