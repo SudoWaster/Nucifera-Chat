@@ -1,9 +1,9 @@
 package pl.cezaryregec.filter;
 
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 import pl.cezaryregec.auth.session.IdentityService;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;

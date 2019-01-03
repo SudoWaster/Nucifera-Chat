@@ -29,10 +29,5 @@ public class APIServletModule extends ServletModule {
         bind(SymmetricEncryptor.class).to(AesEncryptor.class);
         bind(SymmetricDecryptor.class).to(AesDecryptor.class);
         bind(AuthResponseFactory.class);
-        bind(HeartbeatService.class);
-
-        bind(APIExceptionMapper.class);
-        bind(RequestEncryptedReaderInterceptor.class);
-        bind(ResponseEncryptedWriterInterceptor.class);
     }
 }

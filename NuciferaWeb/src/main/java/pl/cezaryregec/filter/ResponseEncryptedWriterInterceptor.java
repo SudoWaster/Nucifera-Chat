@@ -2,7 +2,6 @@ package pl.cezaryregec.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 import pl.cezaryregec.auth.session.IdentityService;
 import pl.cezaryregec.config.ConfigSupplier;
@@ -12,6 +11,7 @@ import pl.cezaryregec.logger.ApplicationLogger;
 import pl.cezaryregec.logger.SecurityLogger;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;

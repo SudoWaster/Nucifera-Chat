@@ -1,10 +1,10 @@
 package pl.cezaryregec.exception;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.logger.ApplicationLogger;
 
+import javax.inject.Inject;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

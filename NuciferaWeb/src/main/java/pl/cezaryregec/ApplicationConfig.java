@@ -11,19 +11,12 @@ import pl.cezaryregec.writer.ByteStreamBodyWriter;
 
 public class ApplicationConfig extends ResourceConfig {
 
-    @Inject
-    private Injector injector;
-
     public ApplicationConfig() {
         property(ServerProperties.MOXY_JSON_FEATURE_DISABLE, true);
         register(JacksonFeature.class);
         register(new GuiceFeature());
         register(ByteStreamBodyWriter.class);
-
-        // register classes after Guice has been set up
-        // so it can inject dependencies without any error
-        // NOTE: anything using Guice you register here should be bound in APIServletModule
-        register(getInjected(APIExceptionMapper.class));
+        register(APIExceptionMapper.class);
         registerFilters();
 
         // services
@@ -31,20 +24,10 @@ public class ApplicationConfig extends ResourceConfig {
     }
 
     private void registerFilters() {
-        register(getInjected(RequestCommunicationLogFilter.class));
-        register(getInjected(ResponseCommunicationLogFilter.class));
-        register(getInjected(RequestEncryptedReaderInterceptor.class));
-        register(getInjected(ResponseEncryptedWriterInterceptor.class));
-        register(getInjected(PlainRequestTokenReceiverFilter.class));
-    }
-
-    /**
-     * Used for providers with injected constructors via Guice
-     *
-     * @param componentClass
-     * @return instance managed by Guice
-     */
-    public Object getInjected(Class<?> componentClass) {
-        return APIServletContextListener.injector.getInstance(componentClass);
+        register(RequestCommunicationLogFilter.class);
+        register(ResponseCommunicationLogFilter.class);
+        register(RequestEncryptedReaderInterceptor.class);
+        register(ResponseEncryptedWriterInterceptor.class);
+        register(PlainRequestTokenReceiverFilter.class);
     }
 }

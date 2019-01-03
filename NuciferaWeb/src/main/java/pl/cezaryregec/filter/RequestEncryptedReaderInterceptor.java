@@ -1,7 +1,6 @@
 package pl.cezaryregec.filter;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.commons.io.IOUtils;
 import pl.cezaryregec.auth.session.IdentityService;
@@ -11,6 +10,7 @@ import pl.cezaryregec.exception.APIException;
 import pl.cezaryregec.logger.SecurityLogger;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
