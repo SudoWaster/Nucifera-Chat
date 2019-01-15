@@ -22,6 +22,12 @@ public class AuthResponseFactory {
         this.postHandshake = postHandshake;
     }
 
+    /**
+     * Creates encrypted session/token
+     *
+     * @param state current client-side state of a handshake
+     * @return state handler
+     */
     public PostAuth create(@NotNull ClientAuthState state) {
         switch (state) {
             case HELLO_INIT:

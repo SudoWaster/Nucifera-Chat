@@ -1,4 +1,4 @@
-package pl.cezaryregec.services;
+package pl.cezaryregec.resources;
 
 import pl.cezaryregec.auth.AuthResponseFactory;
 import pl.cezaryregec.auth.models.LoginQuery;
@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("auth")
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class Auth {
 
@@ -26,14 +27,12 @@ public class Auth {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response initAuth(PostAuthQuery postAuthQuery) throws APIException {
         PostAuth postAuth = authResponseFactory.create(postAuthQuery.getState());
         return Response.ok(postAuth.execute(postAuthQuery)).build();
     }
 
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response login(LoginQuery loginQuery) throws APIException {
         loginService.login(loginQuery);
         return Response.ok().build();

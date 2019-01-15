@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.crypt.CredentialsCombiner;
 import pl.cezaryregec.crypt.HashGenerator;
+import pl.cezaryregec.crypt.PasswordEncoder;
 import pl.cezaryregec.crypt.Sha256Generator;
 import pl.cezaryregec.cucumber.steps.utils.Users;
 import pl.cezaryregec.logger.ApplicationLogger;
@@ -24,6 +25,7 @@ public class UserHooks {
     }
 
     @Before("@UserUsed")
+    @SuppressWarnings("unchecked")
     public void initUser() {
         EntityManager entityManager = Mockito.mock(EntityManager.class);
         Mockito.when(entityManager.find(Mockito.any(), Mockito.any()))
@@ -47,6 +49,8 @@ public class UserHooks {
 
         HashGenerator hashGenerator = new Sha256Generator();
 
-        users.userService = new UserService(entityManagerProvider, configSupplier, credentialsCombiner, hashGenerator);
+        PasswordEncoder passwordEncoder = new PasswordEncoder(configSupplier, credentialsCombiner, hashGenerator);
+
+        users.userService = new UserService(entityManagerProvider, passwordEncoder);
     }
 }

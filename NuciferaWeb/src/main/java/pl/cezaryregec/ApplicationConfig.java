@@ -19,8 +19,8 @@ public class ApplicationConfig extends ResourceConfig {
         register(APIExceptionMapper.class);
         registerFilters();
 
-        // services
-        packages("pl.cezaryregec.services");
+        // resources
+        packages("pl.cezaryregec.resources");
     }
 
     private void registerFilters() {

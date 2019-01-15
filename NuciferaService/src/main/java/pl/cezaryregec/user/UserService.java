@@ -6,42 +6,35 @@ import com.google.inject.persist.Transactional;
 import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.crypt.CredentialsCombiner;
 import pl.cezaryregec.crypt.HashGenerator;
+import pl.cezaryregec.crypt.PasswordEncoder;
 import pl.cezaryregec.exception.APIException;
 import pl.cezaryregec.user.models.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.ForbiddenException;
 import java.util.Optional;
 
+@Transactional
 public class UserService {
 
     private final Provider<EntityManager> entityManagerProvider;
-    private final ConfigSupplier configSupplier;
-    private final CredentialsCombiner credentialsCombiner;
-    private final HashGenerator hashGenerator;
+    private final PasswordEncoder passwordEncoder;
 
     @Inject
     public UserService(
             Provider<EntityManager> entityManagerProvider,
-            ConfigSupplier configSupplier,
-            CredentialsCombiner credentialsCombiner,
-            HashGenerator hashGenerator
-    ) {
+            PasswordEncoder passwordEncoder) {
         this.entityManagerProvider = entityManagerProvider;
-        this.configSupplier = configSupplier;
-        this.credentialsCombiner = credentialsCombiner;
-        this.hashGenerator = hashGenerator;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
     public Optional<User> loginAndGet(String username, String password) throws APIException {
         Optional<User> user = getUser(username);
 
         if (user.isPresent()) {
-            String salt = configSupplier.get().getSecurity().getSalt();
-            String encodedPassword = credentialsCombiner.combine(username, password, salt);
-            String hashedPassword = hashGenerator.encode(encodedPassword);
+            String hashedPassword = passwordEncoder.encode(username, password);
             if (hashedPassword.equals(user.get().getPassword())) {
                 return user;
             }
@@ -50,8 +43,7 @@ public class UserService {
         return Optional.empty();
     }
 
-    @Transactional
-    public Optional<User> getUser(String username) {
+    private Optional<User> getUser(String username) {
         TypedQuery<User> query = entityManagerProvider.get().createNamedQuery("User.findByUsername", User.class);
         query.setParameter("username", username);
 
@@ -60,5 +52,18 @@ public class UserService {
         } catch (NoResultException ex) {
             return Optional.empty();
         }
+    }
+
+    public void create(User user) throws APIException {
+        if (getUser(user.getUsername()).isPresent()) {
+            throw new ForbiddenException("Username is already taken");
+        }
+
+        String username = user.getUsername();
+        String plainPassword = user.getPassword();
+        String encodedPassword = passwordEncoder.encode(username, plainPassword);
+        user.setPassword(encodedPassword);
+
+        entityManagerProvider.get().persist(user);
     }
 }

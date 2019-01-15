@@ -1,4 +1,4 @@
-package pl.cezaryregec.services;
+package pl.cezaryregec.resources;
 
 import pl.cezaryregec.exception.APIException;
 import pl.cezaryregec.heartbeat.service.HeartbeatService;
