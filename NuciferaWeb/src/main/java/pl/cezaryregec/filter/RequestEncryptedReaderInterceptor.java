@@ -40,35 +40,26 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
     private final SymmetricDecryptor decryptor;
     private final SecurityLogger securityLogger;
     private final ConfigSupplier configSupplier;
+    private final TokenInitializer tokenInitializer;
 
     @Inject
     public RequestEncryptedReaderInterceptor(
             Provider<IdentityService> identityServiceProvider,
             SymmetricDecryptor decryptor,
             SecurityLogger securityLogger,
-            ConfigSupplier configSupplier
-    ) {
+            ConfigSupplier configSupplier,
+            TokenInitializer tokenInitializer) {
         this.identityServiceProvider = identityServiceProvider;
         this.decryptor = decryptor;
         this.securityLogger = securityLogger;
         this.configSupplier = configSupplier;
+        this.tokenInitializer = tokenInitializer;
     }
 
     @Override
     public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
-        String fingerprint = FingerprintFactory.create(request);
-        identityServiceProvider.get().setFingerprint(fingerprint);
-
-        // get token if it exists
-        String tokenId = context.getHeaders().getFirst("X-Nucifera-Token");
-        if (tokenId != null) {
-            identityServiceProvider.get().retrieveToken(tokenId);
-        }
-
-        // check for validity and renew
-        if (identityServiceProvider.get().isTokenValid()) {
-            identityServiceProvider.get().renewToken();
-        }
+        String token = context.getHeaders().getFirst("X-Nucifera-Token");
+        tokenInitializer.init(token);
 
         boolean hasCipherSpec = identityServiceProvider.get().hasCipherSpec();
         String servicePath = getServicePath(request.getRequestURI());
