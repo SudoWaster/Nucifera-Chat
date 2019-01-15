@@ -13,6 +13,4 @@ public @Data class PostAuthQuery implements Serializable {
 
     private ClientAuthState state;
     private String challenge;
-    private String username;
-    private String password;
 }

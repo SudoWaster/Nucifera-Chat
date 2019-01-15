@@ -1,5 +1,10 @@
 package pl.cezaryregec.auth;
 
+/**
+ * Handshake states
+ *
+ * Used for indicating handshake state, used with additional layer of encryption
+ */
 public enum AuthState {
     /**
      * Hello initialized, challenge accepted
@@ -12,13 +17,5 @@ public enum AuthState {
     /**
      * Used when HELLO is successful
      */
-    HELLO_VALID,
-    /**
-     * Used when LOGIN fails (usually login or password is incorrect)
-     */
-    LOGIN_FAIL,
-    /**
-     * Used when LOGIN is successful
-     */
-    AUTH_VALID
+    HELLO_VALID
 }
