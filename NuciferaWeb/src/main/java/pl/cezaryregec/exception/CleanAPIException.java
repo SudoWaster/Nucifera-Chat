@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties({"cause", "stackTrace", "localizedMessage", "suppressed"})
+import java.io.Serializable;
+
 @JsonAutoDetect(
         fieldVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -14,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
         creatorVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class CleanAPIException extends APIException {
+@JsonIgnoreProperties({"cause", "stackTrace", "localizedMessage", "suppressed"})
+public class CleanAPIException extends APIException implements Serializable {
     private static final long serialVersionUID = -9147380940962903848L;
 
     private Integer errorCode;

@@ -2,6 +2,7 @@ package pl.cezaryregec.user.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import pl.cezaryregec.auth.models.AuthToken;
 
@@ -27,8 +28,8 @@ public @Data class User implements Serializable {
     @Column(name = "username")
     private String username;
 
-    @JsonIgnore
     @Column(name = "password")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(name = "lastseen")

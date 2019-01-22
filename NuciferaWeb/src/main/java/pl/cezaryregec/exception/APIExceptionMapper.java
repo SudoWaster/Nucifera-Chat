@@ -1,23 +1,27 @@
 package pl.cezaryregec.exception;
 
-import com.google.inject.Singleton;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.logger.ApplicationLogger;
 
 import javax.inject.Inject;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@Singleton
 public class APIExceptionMapper extends Throwable implements ExceptionMapper<Throwable> {
 
     private static final long serialVersionUID = 5089659007201514628L;
 
     private final ApplicationLogger applicationLogger;
     private final ConfigSupplier configSupplier;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Inject
     public APIExceptionMapper(
@@ -29,6 +33,7 @@ public class APIExceptionMapper extends Throwable implements ExceptionMapper<Thr
     }
 
     @Override
+    @Produces(MediaType.APPLICATION_JSON)
     public Response toResponse(Throwable exception) {
         applicationLogger.log(exception);
         APIException apiException = new APIException(exception.getMessage());
@@ -43,10 +48,24 @@ public class APIExceptionMapper extends Throwable implements ExceptionMapper<Thr
         }
 
         if (configSupplier.get().getDebug().getVerbose()) {
-            return Response.status(apiException.getErrorCode()).entity(apiException).build();
+            return prepareResponse(apiException);
         }
 
         CleanAPIException cleanAPIException = new CleanAPIException(apiException.getMessage(), apiException.getErrorCode());
-        return Response.status(cleanAPIException.getErrorCode()).entity(cleanAPIException).build();
+        return prepareResponse(cleanAPIException);
+    }
+
+    private Response prepareResponse(APIException apiException) {
+        String result;
+        try {
+            result = objectMapper.writeValueAsString(apiException);
+        } catch (JsonProcessingException e) {
+            result = apiException.toString();
+        }
+        return Response
+                .status(apiException.getErrorCode())
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .entity(result)
+                .build();
     }
 }

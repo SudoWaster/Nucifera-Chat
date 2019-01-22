@@ -27,7 +27,7 @@ public class User {
     @POST
     public Response createUser(pl.cezaryregec.user.models.User user) throws APIException {
         userService.create(user);
-        return Response.ok().build();
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @GET
@@ -39,5 +39,11 @@ public class User {
         }
 
         throw new ForbiddenException();
+    }
+
+    @PUT
+    public Response changePassword(pl.cezaryregec.user.models.User user) {
+
+        return Response.ok().build();
     }
 }

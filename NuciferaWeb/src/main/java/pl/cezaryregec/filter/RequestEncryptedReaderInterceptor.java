@@ -59,7 +59,7 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
     @Override
     public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
         String token = context.getHeaders().getFirst("X-Nucifera-Token");
-        tokenInitializer.init(token);
+        tokenInitializer.init(request, token);
 
         boolean hasCipherSpec = identityServiceProvider.get().hasCipherSpec();
         String servicePath = getServicePath(request.getRequestURI());

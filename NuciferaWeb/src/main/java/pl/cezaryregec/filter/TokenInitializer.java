@@ -9,9 +9,6 @@ import javax.ws.rs.core.Context;
 
 public class TokenInitializer {
 
-    @Context
-    HttpServletRequest request;
-
     private final Provider<IdentityService> identityServiceProvider;
 
     @Inject
@@ -19,7 +16,7 @@ public class TokenInitializer {
         this.identityServiceProvider = identityServiceProvider;
     }
 
-    public void init(String token) {
+    public void init(HttpServletRequest request, String token) {
         if (!identityServiceProvider.get().isTokenValid()) {
             String fingerprint = FingerprintFactory.create(request);
             identityServiceProvider.get().setFingerprint(fingerprint);

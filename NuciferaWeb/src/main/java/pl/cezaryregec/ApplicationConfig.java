@@ -1,5 +1,6 @@
 package pl.cezaryregec;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -13,10 +14,11 @@ public class ApplicationConfig extends ResourceConfig {
 
     public ApplicationConfig() {
         property(ServerProperties.MOXY_JSON_FEATURE_DISABLE, true);
-        register(JacksonFeature.class);
+        //register(JacksonFeature.class);
+        register(JacksonJaxbJsonProvider.class);
         register(new GuiceFeature());
         register(ByteStreamBodyWriter.class);
-        register(APIExceptionMapper.class);
+        register(APIServletContextListener.injector.getInstance(APIExceptionMapper.class));
         registerFilters();
 
         // resources

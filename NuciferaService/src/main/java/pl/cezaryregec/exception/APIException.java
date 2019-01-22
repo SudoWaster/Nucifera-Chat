@@ -4,8 +4,10 @@ import javax.ws.rs.ClientErrorException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class APIException extends Exception {
+public class APIException extends Exception implements Serializable {
     private static final long serialVersionUID = -5611226621818155268L;
 
     private Integer errorCode;

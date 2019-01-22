@@ -25,7 +25,9 @@
             <param-value>
                 com.jersey.jaxb,
                 com.fasterxml.jackson.jaxrs.json,
-                pl.cezaryregec.filter
+                pl.cezaryregec.exception,
+                pl.cezaryregec.filter,
+                pl.cezaryregec.resources
             </param-value>
         </init-param>
 
