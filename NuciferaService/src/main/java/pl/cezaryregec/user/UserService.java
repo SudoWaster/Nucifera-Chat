@@ -8,6 +8,7 @@ import pl.cezaryregec.crypt.CredentialsCombiner;
 import pl.cezaryregec.crypt.HashGenerator;
 import pl.cezaryregec.crypt.PasswordEncoder;
 import pl.cezaryregec.exception.APIException;
+import pl.cezaryregec.user.models.ChangePasswordRequest;
 import pl.cezaryregec.user.models.User;
 
 import javax.persistence.EntityManager;
@@ -63,6 +64,24 @@ public class UserService {
         String plainPassword = user.getPassword();
         String encodedPassword = passwordEncoder.encode(username, plainPassword);
         user.setPassword(encodedPassword);
+
+        entityManagerProvider.get().persist(user);
+    }
+
+    public void changePassword(ChangePasswordRequest request) throws APIException {
+        Optional<User> existingUser = getUser(request.getUsername());
+        if (!existingUser.isPresent()) {
+            throw new ForbiddenException("User does not exist");
+        }
+
+        String oldCombinedPassword = passwordEncoder.encode(request.getUsername(), request.getPassword());
+        if (!oldCombinedPassword.equals(existingUser.get().getPassword())) {
+            throw new ForbiddenException("Wrong credentials");
+        }
+
+        String newCombinedPassword = passwordEncoder.encode(request.getUsername(), request.getPassword());
+        User user = existingUser.get();
+        user.setPassword(newCombinedPassword);
 
         entityManagerProvider.get().persist(user);
     }

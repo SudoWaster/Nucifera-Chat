@@ -3,6 +3,7 @@ package pl.cezaryregec.resources;
 import pl.cezaryregec.auth.session.IdentityService;
 import pl.cezaryregec.exception.APIException;
 import pl.cezaryregec.user.UserService;
+import pl.cezaryregec.user.models.ChangePasswordRequest;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -38,12 +39,18 @@ public class User {
             return Response.ok(boundUser.get()).build();
         }
 
-        throw new ForbiddenException();
+        throw new ForbiddenException("Not logged in");
     }
 
     @PUT
-    public Response changePassword(pl.cezaryregec.user.models.User user) {
+    public Response changePassword(ChangePasswordRequest request) throws APIException {
+        Optional<pl.cezaryregec.user.models.User> boundUser = identityService.getBoundUser();
 
-        return Response.ok().build();
+        if (boundUser.isPresent() && boundUser.get().getUsername().equals(request.getUsername())) {
+            userService.changePassword(request);
+            return Response.ok().build();
+        }
+
+        throw new ForbiddenException("Wrong credentials");
     }
 }
