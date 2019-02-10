@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import cucumber.api.java.Before;
 import org.mockito.Mockito;
+import pl.cezaryregec.auth.session.IdentityService;
 import pl.cezaryregec.config.ConfigSupplier;
 import pl.cezaryregec.crypt.CredentialsCombiner;
 import pl.cezaryregec.crypt.HashGenerator;
@@ -41,6 +42,7 @@ public class UserHooks {
         Mockito.when(entityManagerProvider.get())
                 .thenReturn(entityManager);
 
+        IdentityService identityService = Mockito.mock(IdentityService.class);
 
         ApplicationLogger applicationLogger = Mockito.mock(ApplicationLogger.class);
         ConfigSupplier configSupplier = new ConfigSupplier(applicationLogger);
@@ -51,6 +53,6 @@ public class UserHooks {
 
         PasswordEncoder passwordEncoder = new PasswordEncoder(configSupplier, credentialsCombiner, hashGenerator);
 
-        users.userService = new UserService(entityManagerProvider, passwordEncoder);
+        users.userService = new UserService(entityManagerProvider, passwordEncoder, identityService);
     }
 }

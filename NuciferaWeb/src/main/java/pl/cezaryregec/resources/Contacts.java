@@ -1,6 +1,7 @@
 package pl.cezaryregec.resources;
 
 import pl.cezaryregec.auth.session.IdentityService;
+import pl.cezaryregec.user.UserService;
 import pl.cezaryregec.user.models.User;
 
 import javax.inject.Inject;
@@ -15,10 +16,12 @@ import java.util.Optional;
 public class Contacts {
 
     private final IdentityService identityService;
+    private final UserService userService;
 
     @Inject
-    public Contacts(IdentityService identityService) {
+    public Contacts(IdentityService identityService, UserService userService) {
         this.identityService = identityService;
+        this.userService = userService;
     }
 
     @GET
@@ -30,5 +33,12 @@ public class Contacts {
         }
 
         throw new ForbiddenException("Not logged in");
+    }
+
+    @PUT
+    public Response addContact(@QueryParam("id") String userId) {
+        userService.addContact(userId);
+
+        return Response.ok().build();
     }
 }

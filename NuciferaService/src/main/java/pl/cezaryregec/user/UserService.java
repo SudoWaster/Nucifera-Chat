@@ -3,9 +3,7 @@ package pl.cezaryregec.user;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
-import pl.cezaryregec.config.ConfigSupplier;
-import pl.cezaryregec.crypt.CredentialsCombiner;
-import pl.cezaryregec.crypt.HashGenerator;
+import pl.cezaryregec.auth.session.IdentityService;
 import pl.cezaryregec.crypt.PasswordEncoder;
 import pl.cezaryregec.exception.APIException;
 import pl.cezaryregec.user.models.ChangePasswordRequest;
@@ -15,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotFoundException;
 import java.util.Optional;
 
 @Transactional
@@ -22,13 +21,15 @@ public class UserService {
 
     private final Provider<EntityManager> entityManagerProvider;
     private final PasswordEncoder passwordEncoder;
+    private final IdentityService identityService;
 
     @Inject
     public UserService(
             Provider<EntityManager> entityManagerProvider,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder, IdentityService identityService) {
         this.entityManagerProvider = entityManagerProvider;
         this.passwordEncoder = passwordEncoder;
+        this.identityService = identityService;
     }
 
     public Optional<User> loginAndGet(String username, String password) throws APIException {
@@ -84,5 +85,27 @@ public class UserService {
         user.setPassword(newCombinedPassword);
 
         entityManagerProvider.get().persist(user);
+    }
+
+    public void addContact(String userId) {
+        long id = Long.parseLong(userId);
+        User user = entityManagerProvider.get().find(User.class, id);
+        Optional<User> boundUser = identityService.getBoundUser();
+
+        if (!boundUser.isPresent()) {
+            throw new ForbiddenException("Not logged in");
+        }
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        if (boundUser.get().getId() == id) {
+            throw new ForbiddenException("Cannot add user you are logged as");
+        }
+
+        boundUser.get().getContacts().add(user);
+        entityManagerProvider.get().merge(boundUser.get());
+        user.getContacts().add(boundUser.get());
+        entityManagerProvider.get().merge(user);
+        identityService.bindUser(boundUser.get());
     }
 }
