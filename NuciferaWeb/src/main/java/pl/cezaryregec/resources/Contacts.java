@@ -36,8 +36,15 @@ public class Contacts {
     }
 
     @PUT
-    public Response addContact(@QueryParam("id") String userId) {
+    public Response addContact(@QueryParam("id") Long userId) {
         userService.addContact(userId);
+
+        return Response.ok().build();
+    }
+
+    @DELETE
+    public Response removeContact(@QueryParam("id") Long userId) {
+        userService.removeContact(userId);
 
         return Response.ok().build();
     }

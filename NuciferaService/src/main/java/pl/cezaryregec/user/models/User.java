@@ -44,4 +44,14 @@ public @Data class User implements Serializable {
     @JsonIgnore
     @ManyToMany
     private List<User> contacts;
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof User) {
+            User otherUser = (User) other;
+            return this.id == otherUser.id;
+        }
+
+        return false;
+    }
 }

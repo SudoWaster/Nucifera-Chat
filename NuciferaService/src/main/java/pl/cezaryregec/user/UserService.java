@@ -87,25 +87,50 @@ public class UserService {
         entityManagerProvider.get().persist(user);
     }
 
-    public void addContact(String userId) {
-        long id = Long.parseLong(userId);
-        User user = entityManagerProvider.get().find(User.class, id);
+    public void addContact(Long userId) {
+        User boundUser = getBoundUser();
+        if (boundUser.getId() == userId) {
+            throw new ForbiddenException("Cannot add user you are logged as");
+        }
+        User user = getUser(userId);
+
+        boundUser.getContacts().add(user);
+        entityManagerProvider.get().merge(boundUser);
+        user.getContacts().add(boundUser);
+        entityManagerProvider.get().merge(user);
+        identityService.bindUser(boundUser);
+    }
+
+
+    public void removeContact(Long userId) {
+        User boundUser = getBoundUser();
+        if (boundUser.getId() == userId) {
+            throw new ForbiddenException("Cannot add user you are logged as");
+        }
+        User user = getUser(userId);
+
+        boundUser.getContacts().remove(user);
+        entityManagerProvider.get().merge(boundUser);
+        user.getContacts().remove(boundUser);
+        entityManagerProvider.get().merge(user);
+        identityService.bindUser(boundUser);
+    }
+
+    private User getUser(Long userId) {
+        User user = entityManagerProvider.get().find(User.class, userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        return user;
+    }
+
+    private User getBoundUser() {
         Optional<User> boundUser = identityService.getBoundUser();
 
         if (!boundUser.isPresent()) {
             throw new ForbiddenException("Not logged in");
         }
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
-        if (boundUser.get().getId() == id) {
-            throw new ForbiddenException("Cannot add user you are logged as");
-        }
 
-        boundUser.get().getContacts().add(user);
-        entityManagerProvider.get().merge(boundUser.get());
-        user.getContacts().add(boundUser.get());
-        entityManagerProvider.get().merge(user);
-        identityService.bindUser(boundUser.get());
+        return boundUser.get();
     }
 }
