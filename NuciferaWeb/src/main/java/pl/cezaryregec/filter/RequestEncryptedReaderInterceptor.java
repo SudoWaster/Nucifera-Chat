@@ -11,6 +11,7 @@ import pl.cezaryregec.logger.SecurityLogger;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
@@ -27,20 +28,16 @@ import java.nio.charset.StandardCharsets;
 @Priority(Priorities.AUTHENTICATION)
 public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
 
-    private static final ImmutableSet UNENCRYPTED_PATHS;
-
-    static {
-        UNENCRYPTED_PATHS = ImmutableSet.of("/auth");
-    }
-
     @Context
     HttpServletRequest request;
+    @Context
+    ServletContext servletContext;
 
     private final Provider<IdentityService> identityServiceProvider;
     private final SymmetricDecryptor decryptor;
     private final SecurityLogger securityLogger;
     private final ConfigSupplier configSupplier;
-    private final TokenInitializer tokenInitializer;
+    private final TokenUtils tokenUtils;
 
     @Inject
     public RequestEncryptedReaderInterceptor(
@@ -48,23 +45,23 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
             SymmetricDecryptor decryptor,
             SecurityLogger securityLogger,
             ConfigSupplier configSupplier,
-            TokenInitializer tokenInitializer) {
+            TokenUtils tokenUtils) {
         this.identityServiceProvider = identityServiceProvider;
         this.decryptor = decryptor;
         this.securityLogger = securityLogger;
         this.configSupplier = configSupplier;
-        this.tokenInitializer = tokenInitializer;
+        this.tokenUtils = tokenUtils;
     }
 
     @Override
     public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
         String token = context.getHeaders().getFirst("X-Nucifera-Token");
-        tokenInitializer.init(request, token);
+        tokenUtils.init(request, token);
 
         boolean hasCipherSpec = identityServiceProvider.get().hasCipherSpec();
-        String servicePath = getServicePath(request.getRequestURI());
+        String servicePath = tokenUtils.getServicePath(servletContext.getContextPath(), request.getRequestURI());
         boolean isEncryptionEnabled = configSupplier.get().getSecurity().getAdditionalEncryption();
-        boolean mustBeEncrypted = !UNENCRYPTED_PATHS.contains(servicePath);
+        boolean mustBeEncrypted = !TokenUtils.UNENCRYPTED_PATHS.contains(servicePath);
 
         if (isEncryptionEnabled && (hasCipherSpec || !mustBeEncrypted)) {
             try {
@@ -80,21 +77,6 @@ public class RequestEncryptedReaderInterceptor implements ReaderInterceptor {
         }
 
         return context.proceed();
-    }
-
-    /**
-     * Parses service path from request URL
-     *
-     * @param requestURI request URI
-     * @return a service path like {@code /auth}
-     */
-    private String getServicePath(String requestURI) {
-        if (requestURI.length() <= 1) return requestURI;
-
-        int slashIndex = requestURI.indexOf("/", 1);
-        if (slashIndex == -1) return requestURI;
-
-        return requestURI.substring(0, slashIndex);
     }
 
     /**

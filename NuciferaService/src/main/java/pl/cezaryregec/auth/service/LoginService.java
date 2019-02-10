@@ -31,7 +31,7 @@ public class LoginService {
         if (identityService.isTokenValid() && user.isPresent()) {
             identityService.bindUser(user.get());
         } else {
-            throw new ForbiddenException();
+            throw new ForbiddenException("Wrong token");
         }
     }
 

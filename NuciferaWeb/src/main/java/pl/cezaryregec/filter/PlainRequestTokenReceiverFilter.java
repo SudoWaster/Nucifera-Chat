@@ -1,9 +1,7 @@
 package pl.cezaryregec.filter;
 
-import com.google.inject.Provider;
-import pl.cezaryregec.auth.session.IdentityService;
-
 import javax.inject.Inject;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -18,19 +16,23 @@ import java.io.IOException;
  */
 public class PlainRequestTokenReceiverFilter implements ContainerRequestFilter {
 
-    private final TokenInitializer tokenInitializer;
+    private final TokenUtils tokenUtils;
 
     @Context
     HttpServletRequest request;
+    @Context
+    ServletContext servletContext;
 
     @Inject
-    public PlainRequestTokenReceiverFilter(TokenInitializer tokenInitializer) {
-        this.tokenInitializer = tokenInitializer;
+    public PlainRequestTokenReceiverFilter(TokenUtils tokenUtils) {
+        this.tokenUtils = tokenUtils;
     }
 
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
         String token = context.getHeaders().getFirst("X-Nucifera-Token");
-        tokenInitializer.init(request, token);
+        tokenUtils.init(request, token);
+        String requestURI = request.getRequestURI();
+        tokenUtils.validateToken(servletContext.getContextPath(), requestURI);
     }
 }

@@ -14,7 +14,7 @@ public class ApplicationConfig extends ResourceConfig {
 
     public ApplicationConfig() {
         property(ServerProperties.MOXY_JSON_FEATURE_DISABLE, true);
-        //register(JacksonFeature.class);
+        register(JacksonFeature.class);
         register(JacksonJaxbJsonProvider.class);
         register(new GuiceFeature());
         register(ByteStreamBodyWriter.class);
