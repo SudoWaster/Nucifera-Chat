@@ -40,4 +40,8 @@ public @Data class User implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<AuthToken> tokenList;
+
+    @JsonIgnore
+    @ManyToMany
+    private List<User> contacts;
 }
