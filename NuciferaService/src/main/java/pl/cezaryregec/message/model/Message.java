@@ -55,6 +55,9 @@ public @Data class Message implements Serializable {
     @Column(name = "state_change_time")
     private Timestamp stateChangeTime;
 
+    @Column(name = "exchange_state")
+    private KeyExchangeState keyExchangeState;
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Message) {

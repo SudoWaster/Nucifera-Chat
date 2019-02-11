@@ -1,6 +1,8 @@
 package pl.cezaryregec.resources;
 
 import pl.cezaryregec.message.MessageService;
+import pl.cezaryregec.message.model.KeyExchangeRequest;
+import pl.cezaryregec.message.model.KeyExchangeState;
 import pl.cezaryregec.message.model.Message;
 import pl.cezaryregec.message.model.MessageSendRequest;
 
@@ -41,6 +43,12 @@ public class Messages {
     @POST
     public Response postMessage(MessageSendRequest message) {
         messageService.postMessage(message);
+        return Response.ok().build();
+    }
+
+    @PUT
+    public Response requestKeyExchange(KeyExchangeRequest request) {
+        messageService.postKeyExchange(request);
         return Response.ok().build();
     }
 }

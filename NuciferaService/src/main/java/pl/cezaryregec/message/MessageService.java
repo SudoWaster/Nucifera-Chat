@@ -4,9 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import pl.cezaryregec.auth.session.IdentityService;
-import pl.cezaryregec.message.model.Message;
-import pl.cezaryregec.message.model.MessageSendRequest;
-import pl.cezaryregec.message.model.MessageState;
+import pl.cezaryregec.message.model.*;
 import pl.cezaryregec.user.models.User;
 
 import javax.persistence.EntityManager;
@@ -31,11 +29,30 @@ public class MessageService {
 
     @Transactional
     public void postMessage(MessageSendRequest messageSendRequest) {
+        Message message = createMessage(messageSendRequest.getReceiver());
+        message.setMessage(messageSendRequest.getMessage());
+        message.setKey(messageSendRequest.getKey());
+        message.setKeyExchangeState(null);
+
+        entityManagerProvider.get().persist(message);
+    }
+
+    @Transactional
+    public void postKeyExchange(KeyExchangeRequest keyExchangeRequest) {
+        Message message = createMessage(keyExchangeRequest.getReceiver());
+        message.setKey(keyExchangeRequest.getPublicKey());
+        message.setKeyExchangeState(keyExchangeRequest.getState());
+
+        entityManagerProvider.get().persist(message);
+    }
+
+    @Transactional
+    private Message createMessage(Long receiverId) {
         User sender = identityService.getBoundUser().orElseThrow(ForbiddenException::new);
         List<User> receivers = sender
                 .getContacts()
                 .stream()
-                .filter(user -> user.getId() == messageSendRequest.getReceiver())
+                .filter(user -> user.getId() == receiverId)
                 .collect(Collectors.toList());
         if (receivers.isEmpty()) {
             throw new ForbiddenException("Receiver not in contacts");
@@ -48,10 +65,8 @@ public class MessageService {
         message.setSentTime(currentTime);
         message.setState(MessageState.UNDELIVERED);
         message.setStateChangeTime(currentTime);
-        message.setMessage(messageSendRequest.getMessage());
-        message.setKey(messageSendRequest.getKey());
 
-        entityManagerProvider.get().persist(message);
+        return message;
     }
 
     @Transactional
@@ -59,8 +74,9 @@ public class MessageService {
         User user = identityService.getBoundUser().orElseThrow(ForbiddenException::new);
         TypedQuery<Message> namedQuery = entityManagerProvider.get().createNamedQuery("Message.findUndelivered", Message.class);
         namedQuery.setParameter("userid", user.getId());
+        List<Message> resultList = namedQuery.getResultList();
 
-        return getMessagesList(namedQuery, MessageState.DELIVERED);
+        return getMessagesList(resultList, MessageState.DELIVERED);
     }
 
     @Transactional
@@ -74,15 +90,16 @@ public class MessageService {
         namedQuery.setParameter("receiver", user.getId());
         namedQuery.setFirstResult(start);
         namedQuery.setMaxResults(end);
+        List<Message> resultList = namedQuery.getResultList();
 
-        return getMessagesList(namedQuery, MessageState.READ);
+        deleteKeys(resultList);
+        return getMessagesList(resultList, MessageState.READ);
     }
 
     @Transactional
-    private List<Message> getMessagesList(TypedQuery<Message> namedQuery, MessageState messageState) {
+    private List<Message> getMessagesList(List<Message> resultList, MessageState messageState) {
         User user = identityService.getBoundUser().orElseThrow(ForbiddenException::new);
         Timestamp timestamp = new Timestamp(clock.millis());
-        List<Message> resultList = namedQuery.getResultList();
         List<Message> resultListUnchanged = resultList
                 .stream()
                 .filter(message -> message.getState() != messageState && message.getReceiver().getId() == user.getId())
@@ -95,5 +112,16 @@ public class MessageService {
         }
 
         return resultList;
+    }
+
+    @Transactional
+    private void deleteKeys(List<Message> resultList) {
+        User user = identityService.getBoundUser().orElseThrow(ForbiddenException::new);
+        resultList
+                .stream()
+                .filter(message -> message.getReceiver().getId() == user.getId() && (message.getKeyExchangeState() == KeyExchangeState.EXCHANGE_REQUESTED || message.getKeyExchangeState() == KeyExchangeState.EXCHANGE_FINISH))
+                .forEach(message -> {
+                    entityManagerProvider.get().remove(message);
+                });
     }
 }
