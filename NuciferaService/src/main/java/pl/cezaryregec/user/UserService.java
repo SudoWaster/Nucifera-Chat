@@ -56,6 +56,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void create(User user) throws APIException {
         if (getUser(user.getUsername()).isPresent()) {
             throw new ForbiddenException("Username is already taken");
@@ -69,6 +70,7 @@ public class UserService {
         entityManagerProvider.get().persist(user);
     }
 
+    @Transactional
     public void changePassword(ChangePasswordRequest request) throws APIException {
         Optional<User> existingUser = getUser(request.getUsername());
         if (!existingUser.isPresent()) {
@@ -87,6 +89,7 @@ public class UserService {
         entityManagerProvider.get().persist(user);
     }
 
+    @Transactional
     public void addContact(Long userId) {
         User boundUser = getBoundUser();
         if (boundUser.getId() == userId) {
@@ -101,7 +104,7 @@ public class UserService {
         identityService.bindUser(boundUser);
     }
 
-
+    @Transactional
     public void removeContact(Long userId) {
         User boundUser = getBoundUser();
         if (boundUser.getId() == userId) {

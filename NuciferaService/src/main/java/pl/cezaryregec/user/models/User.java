@@ -52,6 +52,10 @@ public @Data class User implements Serializable {
             return this.id == otherUser.id;
         }
 
+        if (other instanceof Long) {
+            return this.id == (Long) other;
+        }
+
         return false;
     }
 }
